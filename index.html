@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>羽球教練助理</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="羽球助理">
+<meta name="theme-color" content="#185FA5">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMTg1RkE1Ii8+PHRleHQgeT0iLjllbSIgZm9udC1zaXplPSI3NSIgeD0iMTIiPvCfmvE8L3RleHQ+PC9zdmc+">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f2f2f7; min-height: 100vh; }
+.app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; background: #f2f2f7; }
+.header { background: #fff; border-bottom: 1px solid #e5e5ea; padding: 14px 16px; }
+.header-title { font-size: 18px; font-weight: 600; color: #1c1c1e; }
+.header-sub { font-size: 12px; color: #8e8e93; margin-top: 2px; }
+.tab-bar { display: flex; border-bottom: 1px solid #e5e5ea; background: #fff; }
+.tab { flex: 1; padding: 10px 2px; font-size: 11.5px; color: #8e8e93; text-align: center; cursor: pointer; border-bottom: 2px solid transparent; }
+.tab.active { color: #185FA5; border-bottom: 2px solid #185FA5; font-weight: 600; }
+.content { flex: 1; padding: 12px; }
+.card { background: #fff; border-radius: 12px; border: 1px solid #e5e5ea; padding: 14px; margin-bottom: 10px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: #E6F1FB; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; color: #185FA5; flex-shrink: 0; }
+.big-avatar { width: 54px; height: 54px; border-radius: 50%; background: #E6F1FB; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; color: #185FA5; flex-shrink: 0; }
+.student-row { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.student-name { font-size: 15px; font-weight: 600; color: #1c1c1e; }
+.student-meta { font-size: 12px; color: #8e8e93; margin-top: 2px; }
+.student-memo-preview { font-size: 12px; color: #8e8e93; margin-top: 3px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+.badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-ok { background: #EAF3DE; color: #3B6D11; }
+.badge-low { background: #FAEEDA; color: #854F0B; }
+.badge-zero { background: #FCEBEB; color: #A32D2D; }
+.section-label { font-size: 11px; color: #8e8e93; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.metric-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.metric { background: #f2f2f7; border-radius: 10px; padding: 10px; text-align: center; }
+.metric-num { font-size: 24px; font-weight: 600; color: #1c1c1e; }
+.metric-lbl { font-size: 11px; color: #8e8e93; margin-top: 2px; }
+.btn { display: block; width: 100%; padding: 11px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; color: #1c1c1e; font-size: 14px; cursor: pointer; text-align: center; margin-bottom: 8px; font-family: inherit; }
+.btn:active { opacity: 0.8; }
+.btn-primary { background: #185FA5; color: #fff; border-color: #185FA5; font-weight: 600; }
+.btn-danger { background: #FCEBEB; color: #A32D2D; border-color: #F7C1C1; font-weight: 600; }
+.btn-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.btn-row .btn { margin-bottom: 0; }
+.btn-export { background: #E1F5EE; color: #0F6E56; border-color: #9FE1CB; font-weight: 600; }
+.btn-sync { background: #F0E6FB; color: #6B21A8; border-color: #C4B5FD; font-weight: 600; }
+.btn-notion { background: #F5F5F4; color: #1c1c1e; border-color: #D6D3D1; font-weight: 600; }
+.btn-schedule { background: #FFF3E0; color: #E65100; border-color: #FFCC80; font-weight: 600; }
+.input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; color: #1c1c1e; font-size: 15px; margin-bottom: 10px; font-family: inherit; -webkit-appearance: none; }
+.input:focus { outline: none; border-color: #185FA5; }
+textarea.input { min-height: 72px; resize: vertical; }
+.search-wrap { position: relative; margin-bottom: 10px; }
+.search-wrap input { padding-left: 36px; margin-bottom: 0; }
+.search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #8e8e93; font-size: 15px; pointer-events: none; }
+.label { font-size: 13px; color: #8e8e93; margin-bottom: 4px; display: block; }
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 0; }
+.input-row .input-group { display: flex; flex-direction: column; }
+.input-row .input-group .input { margin-bottom: 0; }
+.input-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.input-row-3 .input-group { display: flex; flex-direction: column; }
+.input-row-3 .input-group .input { margin-bottom: 0; }
+.log-row { display: grid; grid-template-columns: 76px 1fr 1fr 50px; align-items: center; gap: 6px; padding: 8px 0; border-bottom: 1px solid #f2f2f7; }
+.log-date { font-size: 12px; color: #8e8e93; }
+.log-time { font-size: 12px; color: #636366; }
+.log-location { font-size: 12px; color: #1c1c1e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.log-num { font-size: 13px; font-weight: 600; text-align: right; }
+.log-num.plus { color: #3B6D11; }
+.log-num.minus { color: #A32D2D; }
+.log-header { display: grid; grid-template-columns: 76px 1fr 1fr 50px; gap: 6px; padding: 0 0 6px; border-bottom: 1px solid #e5e5ea; margin-bottom: 2px; }
+.log-header span { font-size: 11px; color: #8e8e93; font-weight: 600; }
+.log-header span:last-child { text-align: right; }
+.note-box { background: #f2f2f7; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #1c1c1e; line-height: 1.6; margin-bottom: 8px; }
+.ai-tag { font-size: 11px; color: #185FA5; font-weight: 600; margin-bottom: 4px; }
+.memo-box { background: #FAEEDA; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #633806; line-height: 1.6; margin-bottom: 8px; font-style: italic; }
+.back-btn { font-size: 14px; color: #185FA5; cursor: pointer; margin-bottom: 12px; display: inline-block; }
+.empty-state { text-align: center; padding: 30px 20px; color: #8e8e93; font-size: 14px; line-height: 1.6; }
+.student-view-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.no-result { text-align: center; padding: 24px; color: #8e8e93; font-size: 14px; }
+.sync-status { font-size: 12px; padding: 6px 10px; border-radius: 8px; margin-top: 6px; }
+.sync-ok { background: #EAF3DE; color: #3B6D11; }
+.sync-err { background: #FCEBEB; color: #A32D2D; }
+.sync-ing { background: #E6F1FB; color: #185FA5; }
+.save-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); background: #1c1c1e; color: #fff; font-size: 13px; padding: 8px 18px; border-radius: 20px; opacity: 0; transition: opacity 0.25s, transform 0.25s; z-index: 9999; pointer-events: none; white-space: nowrap; }
+.save-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.progress-bar { height: 4px; background: #e5e5ea; border-radius: 2px; overflow: hidden; margin-top: 8px; }
+.progress-fill { height: 100%; background: #185FA5; border-radius: 2px; transition: width 0.4s; }
+.cfg-card { background: #FFF8E6; border: 1px solid #FFD966; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+.cfg-title { font-size: 13px; font-weight: 700; color: #854F0B; margin-bottom: 6px; }
+.cfg-desc { font-size: 12px; color: #633806; line-height: 1.6; margin-bottom: 10px; }
+.status-ok { font-size: 12px; color: #3B6D11; margin-top: -4px; margin-bottom: 4px; }
+.status-no { font-size: 12px; color: #A32D2D; margin-top: -4px; margin-bottom: 4px; }
+
+/* 排課 */
+.date-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.date-nav-btn { background: #fff; border: 1px solid #e5e5ea; border-radius: 8px; padding: 7px 14px; font-size: 18px; cursor: pointer; color: #185FA5; line-height: 1; }
+.date-nav-btn:active { background: #E6F1FB; }
+.date-center { text-align: center; flex: 1; }
+.date-display { font-size: 16px; font-weight: 700; color: #1c1c1e; }
+.date-weekday { font-size: 12px; color: #8e8e93; margin-top: 2px; }
+.today-btn { font-size: 12px; color: #185FA5; background: #E6F1FB; border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; margin-top: 4px; font-family: inherit; }
+.week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 12px; }
+.week-cell { text-align: center; cursor: pointer; }
+.week-cell-day { font-size: 10px; color: #8e8e93; margin-bottom: 3px; }
+.week-cell-num { width: 32px; height: 32px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; background: #f2f2f7; color: #636366; position: relative; }
+.week-cell-num.is-today { border: 2px solid #185FA5; }
+.week-cell-num.is-selected { background: #185FA5; color: #fff; }
+.week-cell-num.has-class { background: #E6F1FB; color: #185FA5; }
+.week-dot { position: absolute; bottom: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background: #FF9500; }
+.schedule-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f2f2f7; }
+.schedule-item:last-child { border-bottom: none; }
+.schedule-time-col { min-width: 80px; }
+.schedule-time-start { font-size: 15px; font-weight: 700; color: #185FA5; }
+.schedule-time-end { font-size: 11px; color: #8e8e93; }
+.schedule-info { flex: 1; min-width: 0; }
+.schedule-name { font-size: 14px; font-weight: 600; color: #1c1c1e; }
+.schedule-loc { font-size: 12px; color: #8e8e93; margin-top: 2px; }
+.schedule-note { font-size: 12px; color: #636366; margin-top: 2px; font-style: italic; }
+.schedule-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.icon-btn { background: none; border: 1px solid #e5e5ea; border-radius: 7px; padding: 5px 8px; font-size: 14px; cursor: pointer; color: #636366; }
+.icon-btn:active { background: #f2f2f7; }
+.icon-btn.del { border-color: #F7C1C1; color: #A32D2D; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; overflow-y: auto; padding: 20px; }
+.modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+.modal-box { background: #fff; border-radius: 16px; padding: 20px; width: 100%; max-width: 440px; margin: auto; }
+.modal-title { font-size: 16px; font-weight: 700; color: #1c1c1e; margin-bottom: 14px; }
+.modal-btn-row { display: flex; gap: 8px; margin-top: 4px; }
+.modal-btn-row .btn { margin-bottom: 0; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="header">
+    <div class="header-title">🏸 羽球教練助理</div>
+    <div class="header-sub">教練管理模式</div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" id="tab-students" onclick="switchTab('students')">學生列表</div>
+    <div class="tab" id="tab-schedule" onclick="switchTab('schedule')">排課</div>
+    <div class="tab" id="tab-record" onclick="switchTab('record')">記錄上課</div>
+    <div class="tab" id="tab-sync" onclick="switchTab('sync')">設定</div>
+  </div>
+  <div class="content" id="main-content"></div>
+</div>
+
+<div class="save-toast" id="save-toast"></div>
+
+<div class="modal-overlay" id="schedule-modal" onclick="onModalBgClick(event)">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">新增排課</div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// ★ 所有 Token 都從 App 內設定，不寫在程式碼裡
+//   這樣上傳到 GitHub 完全安全
+// ══════════════════════════════════════════════
+
+// ── 工具函式 ──
+function today() { return new Date().toISOString().slice(0,10); }
+function nowTime() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function formatTimeRange(s, e) {
+  if (s && e) return s + ' – ' + e;
+  if (s) return s;
+  return '—';
+}
+function addDays(d, n) {
+  const dt = new Date(d + 'T00:00:00');
+  dt.setDate(dt.getDate() + n);
+  return dt.toISOString().slice(0,10);
+}
+function getWeekDates(d) {
+  const dt = new Date(d + 'T00:00:00');
+  const day = dt.getDay();
+  const mon = new Date(dt); mon.setDate(dt.getDate() - ((day + 6) % 7));
+  return Array.from({length:7}, (_,i) => {
+    const x = new Date(mon); x.setDate(mon.getDate() + i);
+    return x.toISOString().slice(0,10);
+  });
+}
+
+// ── LocalStorage keys ──
+const SK_STUDENTS   = 'bmc_students';
+const SK_NOTION_MAP = 'bmc_notion_map';
+const SK_SCHEDULE   = 'bmc_schedule';
+const SK_ANT_KEY    = 'bmc_anthropic_key';
+const SK_NOTION_TOK = 'bmc_notion_token';      // ← 從 App 內輸入
+const SK_NOTION_DB  = 'bmc_notion_db_id';      // ← 從 App 內輸入
+
+// ── 讀寫設定 ──
+function getCfg(key) { return localStorage.getItem(key) || ''; }
+function setCfg(key, val) { localStorage.setItem(key, val); }
+
+// ── 預設學生 ──
+const DEFAULT_STUDENTS = [
+  { id:1, name:'小明', initials:'明', totalBought:20, used:14, memo:'電腦工程師，週末才有空，個性認真',
+    logs:[
+      {date:'2024-06-10',timeStart:'10:00',timeEnd:'12:00',location:'體育館A場',type:'上課',delta:-1},
+      {date:'2024-06-03',timeStart:'10:00',timeEnd:'12:00',location:'體育館A場',type:'上課',delta:-1},
+      {date:'2024-05-28',timeStart:'09:30',timeEnd:'11:30',location:'體育館B場',type:'上課',delta:-1},
+      {date:'2024-05-20',timeStart:'',timeEnd:'',location:'',type:'購課',delta:10},
+      {date:'2024-05-10',timeStart:'10:00',timeEnd:'12:00',location:'體育館A場',type:'上課',delta:-1},
+      {date:'2024-04-18',timeStart:'',timeEnd:'',location:'',type:'購課',delta:10},
+      {date:'2024-04-10',timeStart:'10:00',timeEnd:'12:00',location:'體育館A場',type:'上課',delta:-1}
+    ],
+    notes:[{date:'2024-06-10',text:'優點：反手擊球進步明顯。待改進：步伐移動稍慢，後場銜接不夠流暢。下次重點：後場高遠球落點練習。',ai:true}] },
+  { id:2, name:'小華', initials:'華', totalBought:10, used:9, memo:'台北體大體保生，基礎很好，主攻殺球',
+    logs:[
+      {date:'2024-06-09',timeStart:'14:00',timeEnd:'16:00',location:'體育館C場',type:'上課',delta:-1},
+      {date:'2024-06-02',timeStart:'14:00',timeEnd:'16:00',location:'體育館C場',type:'上課',delta:-1},
+      {date:'2024-05-25',timeStart:'',timeEnd:'',location:'',type:'購課',delta:10}
+    ],
+    notes:[{date:'2024-06-09',text:'優點：發球穩定，戰術意識不錯。待改進：殺球力道不足，手腕爆發力需加強。下次重點：手腕爆發力訓練。',ai:true}] },
+  { id:3, name:'小美', initials:'美', totalBought:15, used:5, memo:'',
+    logs:[
+      {date:'2024-06-08',timeStart:'11:00',timeEnd:'13:00',location:'社區球場',type:'上課',delta:-1},
+      {date:'2024-05-30',timeStart:'11:00',timeEnd:'13:00',location:'社區球場',type:'上課',delta:-1},
+      {date:'2024-05-15',timeStart:'',timeEnd:'',location:'',type:'購課',delta:15}
+    ],
+    notes:[] },
+];
+
+function loadStudents() {
+  try {
+    const raw = localStorage.getItem(SK_STUDENTS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      parsed.forEach(s => {
+        s.logs = s.logs.map(l => ({
+          timeStart: l.timeStart !== undefined ? l.timeStart : (l.time || ''),
+          timeEnd: l.timeEnd !== undefined ? l.timeEnd : '',
+          location: l.location || '',
+          date: l.date, type: l.type, delta: l.delta
+        }));
+      });
+      return parsed;
+    }
+  } catch(e) {}
+  return DEFAULT_STUDENTS;
+}
+function saveStudents() {
+  try { localStorage.setItem(SK_STUDENTS, JSON.stringify(state.students)); showToast('✅ 已自動儲存'); } catch(e) {}
+}
+function loadNotionMap() { try { return JSON.parse(localStorage.getItem(SK_NOTION_MAP) || '{}'); } catch { return {}; } }
+function saveNotionMap(m) { localStorage.setItem(SK_NOTION_MAP, JSON.stringify(m)); }
+function loadSchedule() { try { return JSON.parse(localStorage.getItem(SK_SCHEDULE) || '[]'); } catch { return []; } }
+function saveSchedule() { try { localStorage.setItem(SK_SCHEDULE, JSON.stringify(state.schedule)); } catch(e) {} }
+
+// ── Toast ──
+let toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('save-toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ── 狀態 ──
+const state = {
+  tab: 'students',
+  selectedStudent: null,
+  view: 'list',
+  search: '',
+  students: loadStudents(),
+  syncLog: [],
+  schedule: loadSchedule(),
+  scheduleDate: today(),
+};
+
+function getRemaining(s) { return s.totalBought - s.used; }
+function getBadge(rem) {
+  if (rem <= 0) return '<span class="badge badge-zero">已用完</span>';
+  if (rem <= 2) return '<span class="badge badge-low">剩 '+rem+' 堂</span>';
+  return '<span class="badge badge-ok">剩 '+rem+' 堂</span>';
+}
+function switchTab(t) {
+  state.tab = t; state.view = 'list';
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  render();
+}
+function render() {
+  const c = document.getElementById('main-content');
+  if (state.tab === 'students') {
+    state.view === 'detail' && state.selectedStudent ? renderDetail(c) : renderList(c);
+  } else if (state.tab === 'schedule') {
+    renderSchedule(c);
+  } else if (state.tab === 'record') {
+    renderRecord(c);
+  } else {
+    renderSettings(c);
+  }
+}
+
+// ════════════════════════════════════════════
+// 學生列表
+// ════════════════════════════════════════════
+function renderList(c) {
+  const low = state.students.filter(s => getRemaining(s) <= 2).length;
+  const keyword = state.search.trim();
+  const filtered = keyword ? state.students.filter(s => s.name.includes(keyword)) : state.students;
+  c.innerHTML = `
+    <div class="metric-row">
+      <div class="metric"><div class="metric-num">${state.students.length}</div><div class="metric-lbl">學生</div></div>
+      <div class="metric"><div class="metric-num" style="color:#A32D2D">${low}</div><div class="metric-lbl">課堂不足</div></div>
+      <div class="metric"><div class="metric-num">${state.students.reduce((a,s)=>a+getRemaining(s),0)}</div><div class="metric-lbl">總剩餘堂</div></div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="input" type="text" id="search-input" placeholder="搜尋學生姓名..." value="${keyword}" oninput="onSearch(this.value)">
+    </div>
+    ${filtered.length === 0
+      ? `<div class="no-result">找不到「${keyword}」的學生</div>`
+      : filtered.map(s=>`
+        <div class="card" onclick="openStudent(${s.id})">
+          <div class="student-row">
+            <div class="avatar">${s.initials}</div>
+            <div style="flex:1;min-width:0">
+              <div class="student-name">${s.name}</div>
+              <div class="student-meta">共購 ${s.totalBought} 堂・已上 ${s.used} 堂</div>
+              ${s.memo ? `<div class="student-memo-preview">${s.memo}</div>` : ''}
+            </div>
+            ${getBadge(getRemaining(s))}
+          </div>
+        </div>`).join('')}
+    <button class="btn" style="margin-top:4px" onclick="addStudent()">+ 新增學生</button>`;
+}
+
+function onSearch(val) {
+  state.search = val;
+  renderList(document.getElementById('main-content'));
+  const input = document.getElementById('search-input');
+  if (input) { input.focus(); input.setSelectionRange(val.length, val.length); }
+}
+
+// ════════════════════════════════════════════
+// 學生詳情
+// ════════════════════════════════════════════
+function renderLogRows(logs) {
+  if (!logs.length) return '<div style="font-size:13px;color:#8e8e93;padding:8px 0">尚無紀錄</div>';
+  return `
+    <div class="log-header">
+      <span>日期</span><span>時間區間</span><span>地點</span><span style="text-align:right">變動</span>
+    </div>
+    ${logs.map(l => `
+      <div class="log-row">
+        <span class="log-date">${l.date}</span>
+        <span class="log-time">${formatTimeRange(l.timeStart, l.timeEnd)}</span>
+        <span class="log-location">${l.location || (l.type === '購課' ? '（購課）' : '—')}</span>
+        <span class="log-num ${l.delta>0?'plus':'minus'}">${l.delta>0?'+'+l.delta:l.delta}</span>
+      </div>`).join('')}`;
+}
+
+function renderDetail(c) {
+  const s = state.students.find(x=>x.id===state.selectedStudent);
+  const rem = getRemaining(s);
+  const hasAiKey = !!getCfg(SK_ANT_KEY);
+  c.innerHTML = `
+    <span class="back-btn" onclick="goBack()">← 返回列表</span>
+    <div class="card">
+      <div class="student-view-header">
+        <div class="big-avatar">${s.initials}</div>
+        <div>
+          <div class="student-name" style="font-size:18px">${s.name}</div>
+          <div style="margin-top:4px">${getBadge(rem)}</div>
+        </div>
+      </div>
+      <div class="metric-row">
+        <div class="metric"><div class="metric-num">${s.totalBought}</div><div class="metric-lbl">購買</div></div>
+        <div class="metric"><div class="metric-num">${s.used}</div><div class="metric-lbl">已上</div></div>
+        <div class="metric"><div class="metric-num" style="color:${rem<=2?'#A32D2D':'#3B6D11'}">${rem}</div><div class="metric-lbl">剩餘</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="addLesson(${s.id})">記錄上課 −1</button>
+        <button class="btn" onclick="addPurchase(${s.id})">購課 +10</button>
+      </div>
+      <button class="btn btn-export" onclick="exportPrint(${s.id})">📄 匯出給學生（存PDF）</button>
+      <button class="btn btn-schedule" style="margin-top:0" onclick="scheduleFromStudent(${s.id})">📅 為此學生排課</button>
+      <button class="btn btn-notion" style="margin-top:0" onclick="syncOneNotion(${s.id})">📝 同步到 Notion</button>
+      <div id="sync-status-${s.id}"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">教練備註</div>
+      ${s.memo ? `<div class="memo-box">${s.memo}</div>` : '<div style="font-size:13px;color:#8e8e93;margin-bottom:8px">尚無備註</div>'}
+      <textarea class="input" id="memo-input-${s.id}" placeholder="記錄對這位學生的印象...">${s.memo||''}</textarea>
+      <button class="btn" onclick="saveMemo(${s.id})">儲存備註</button>
+    </div>
+
+    <div class="card">
+      <div class="section-label">學習狀況（AI 整理筆記）</div>
+      ${!hasAiKey ? `
+        <div style="background:#FFF3CD;border:1px solid #FFD966;border-radius:10px;padding:10px 12px;font-size:13px;color:#856404;margin-bottom:10px;line-height:1.6;">
+          ⚠️ 請先到「設定」分頁填入 Anthropic API Key 才能使用 AI 功能
+        </div>` : ''}
+      ${s.notes.length===0
+        ? '<div class="empty-state">尚無筆記<br>輸入上課狀況後，AI 幫你整理</div>'
+        : s.notes.map(n=>`
+          <div class="note-box">
+            <div class="ai-tag">✨ AI 整理・${n.date}</div>
+            ${n.text}
+          </div>`).join('')}
+      <textarea class="input" id="note-input-${s.id}" placeholder="口語輸入今天上課狀況，例如：小明今天練了殺球，力道有進步但落點不夠精準..."></textarea>
+      <button class="btn btn-primary" id="ai-btn-${s.id}" onclick="generateNote(${s.id})" ${!hasAiKey?'disabled style="opacity:0.5"':''}>✨ AI 整理筆記</button>
+    </div>
+
+    <div class="card">
+      <div class="section-label">上課紀錄</div>
+      ${renderLogRows(s.logs)}
+    </div>
+
+    <div class="card">
+      <div class="section-label">危險操作</div>
+      <button class="btn btn-danger" onclick="deleteStudent(${s.id})">刪除此學生</button>
+    </div>`;
+}
+
+// ════════════════════════════════════════════
+// 排課
+// ════════════════════════════════════════════
+function renderSchedule(c) {
+  const sel = state.scheduleDate;
+  const weekDates = getWeekDates(sel);
+  const todayStr = today();
+
+  const weekCells = weekDates.map((d, i) => {
+    const dayLabel = ['一','二','三','四','五','六','日'][i];
+    const count = state.schedule.filter(x => x.date === d).length;
+    const isToday = d === todayStr, isSel = d === sel;
+    let cls = 'week-cell-num';
+    if (isSel) cls += ' is-selected';
+    else if (count > 0) cls += ' has-class';
+    if (isToday) cls += ' is-today';
+    return `<div class="week-cell" onclick="selectScheduleDate('${d}')">
+      <div class="week-cell-day">${dayLabel}</div>
+      <div class="${cls}">${d.slice(8)}${(!isSel&&count>0)?'<span class="week-dot"></span>':''}</div>
+    </div>`;
+  }).join('');
+
+  const dayItems = state.schedule.filter(x=>x.date===sel).sort((a,b)=>(a.timeStart||'').localeCompare(b.timeStart||''));
+  const itemsHtml = dayItems.length === 0
+    ? `<div class="empty-state" style="padding:20px 0">今天沒有排課</div>`
+    : dayItems.map(item => {
+        const stu = state.students.find(s=>s.id===item.studentId);
+        return `<div class="schedule-item">
+          <div class="schedule-time-col">
+            <div class="schedule-time-start">${item.timeStart||'—'}</div>
+            <div class="schedule-time-end">${item.timeEnd?'至 '+item.timeEnd:''}</div>
+          </div>
+          <div class="schedule-info">
+            <div class="schedule-name">${item.studentName}</div>
+            <div class="schedule-loc">${item.location||'未設定地點'} · 剩 ${stu?getRemaining(stu):'?'} 堂</div>
+            ${item.note?`<div class="schedule-note">${item.note}</div>`:''}
+          </div>
+          <div class="schedule-actions">
+            <button class="icon-btn" onclick="openEditSchedule('${item.id}')">✏️</button>
+            <button class="icon-btn del" onclick="deleteScheduleItem('${item.id}')">🗑</button>
+          </div>
+        </div>`;
+      }).join('');
+
+  c.innerHTML = `
+    <div class="card">
+      <div class="date-nav">
+        <button class="date-nav-btn" onclick="shiftScheduleDate(-1)">‹</button>
+        <div class="date-center">
+          <div class="date-display">${sel.replace(/-/g,'/')}</div>
+          <div class="date-weekday">週${'日一二三四五六'[new Date(sel+'T00:00:00').getDay()]}</div>
+          ${sel!==todayStr?`<button class="today-btn" onclick="selectScheduleDate('${todayStr}')">回到今天</button>`:''}
+        </div>
+        <button class="date-nav-btn" onclick="shiftScheduleDate(1)">›</button>
+      </div>
+      <div class="week-grid">${weekCells}</div>
+      <input type="date" class="input" value="${sel}" onchange="selectScheduleDate(this.value)" style="margin-bottom:0;font-size:14px;">
+    </div>
+    <div class="card">
+      <div class="section-label">當天課表（${dayItems.length} 堂）</div>
+      ${itemsHtml}
+      <button class="btn btn-primary" style="margin-top:${dayItems.length?'10':'0'}px" onclick="openAddSchedule()">+ 新增排課</button>
+    </div>`;
+}
+
+function selectScheduleDate(d) { if(d){ state.scheduleDate=d; render(); } }
+function shiftScheduleDate(n) { state.scheduleDate=addDays(state.scheduleDate,n); render(); }
+function scheduleFromStudent(sid) {
+  state.tab='schedule'; state.scheduleDate=today();
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-schedule').classList.add('active');
+  render(); openAddSchedule(sid);
+}
+
+function scheduleFormHtml(item, presetSid, defStart, defEnd) {
+  const opts = state.students.map(s=>
+    `<option value="${s.id}" ${(item?item.studentId:presetSid)===s.id?'selected':''}>${s.name}（剩 ${getRemaining(s)} 堂）</option>`
+  ).join('');
+  const e = !!item;
+  return `
+    <label class="label">學生</label>
+    <select class="input" id="sch-student">${opts}</select>
+    <label class="label">日期</label>
+    <input class="input" type="date" id="sch-date" value="${e?item.date:state.scheduleDate}">
+    <div class="input-row" style="margin-bottom:10px">
+      <div class="input-group"><label class="label">開始時間</label>
+        <input class="input" type="time" id="sch-start" value="${e?(item.timeStart||''):(defStart||'')}" style="margin-bottom:0"></div>
+      <div class="input-group"><label class="label">結束時間</label>
+        <input class="input" type="time" id="sch-end" value="${e?(item.timeEnd||''):(defEnd||'')}" style="margin-bottom:0"></div>
+    </div>
+    <label class="label">地點</label>
+    <input class="input" type="text" id="sch-loc" placeholder="例：體育館A場" value="${e?(item.location||''):''}">
+    <label class="label">備註（選填）</label>
+    <input class="input" type="text" id="sch-note" placeholder="例：重點練習殺球" value="${e?(item.note||''):''}">
+    <div class="modal-btn-row">
+      <button class="btn" onclick="closeScheduleModal()">取消</button>
+      <button class="btn btn-primary" onclick="${e?`saveEditSchedule('${item.id}')`:'saveAddSchedule()'}">儲存</button>
+    </div>`;
+}
+
+function openAddSchedule(presetSid) {
+  document.getElementById('modal-title').textContent = '新增排課';
+  const nh=nowTime(), eh=(()=>{const[h,m]=nh.split(':').map(Number);return String((h+2)%24).padStart(2,'0')+':'+String(m).padStart(2,'0');})();
+  document.getElementById('modal-body').innerHTML = scheduleFormHtml(null, presetSid, nh, eh);
+  document.getElementById('schedule-modal').classList.add('open');
+}
+function openEditSchedule(id) {
+  const item=state.schedule.find(x=>x.id===id); if(!item)return;
+  document.getElementById('modal-title').textContent='編輯排課';
+  document.getElementById('modal-body').innerHTML=scheduleFormHtml(item);
+  document.getElementById('schedule-modal').classList.add('open');
+}
+function closeScheduleModal() { document.getElementById('schedule-modal').classList.remove('open'); }
+function onModalBgClick(e) { if(e.target===document.getElementById('schedule-modal'))closeScheduleModal(); }
+function saveAddSchedule() {
+  const sid=parseInt(document.getElementById('sch-student').value);
+  const stu=state.students.find(s=>s.id===sid);
+  const date=document.getElementById('sch-date').value||state.scheduleDate;
+  state.schedule.push({id:String(Date.now()),studentId:sid,studentName:stu?stu.name:'未知',
+    date,timeStart:document.getElementById('sch-start').value,timeEnd:document.getElementById('sch-end').value,
+    location:document.getElementById('sch-loc').value.trim(),note:document.getElementById('sch-note').value.trim()});
+  saveSchedule(); state.scheduleDate=date; closeScheduleModal(); render(); showToast('✅ 排課已新增');
+}
+function saveEditSchedule(id) {
+  const item=state.schedule.find(x=>x.id===id); if(!item)return;
+  const sid=parseInt(document.getElementById('sch-student').value);
+  const stu=state.students.find(s=>s.id===sid);
+  Object.assign(item,{studentId:sid,studentName:stu?stu.name:item.studentName,
+    date:document.getElementById('sch-date').value||item.date,
+    timeStart:document.getElementById('sch-start').value,timeEnd:document.getElementById('sch-end').value,
+    location:document.getElementById('sch-loc').value.trim(),note:document.getElementById('sch-note').value.trim()});
+  saveSchedule(); state.scheduleDate=item.date; closeScheduleModal(); render(); showToast('✅ 排課已更新');
+}
+function deleteScheduleItem(id) {
+  if(!confirm('確定要刪除此排課？'))return;
+  state.schedule=state.schedule.filter(x=>x.id!==id);
+  saveSchedule(); render(); showToast('🗑 排課已刪除');
+}
+
+// ════════════════════════════════════════════
+// 記錄上課
+// ════════════════════════════════════════════
+function renderRecord(c) {
+  const cur=nowTime(), end=(()=>{const[h,m]=cur.split(':').map(Number);return String((h+2)%24).padStart(2,'0')+':'+String(m).padStart(2,'0');})();
+  c.innerHTML = `
+    <div class="card">
+      <div class="section-label">記錄上課</div>
+      <label class="label">選擇學生</label>
+      <select class="input" id="rec-student">${state.students.map(s=>`<option value="${s.id}">${s.name}（剩 ${getRemaining(s)} 堂）</option>`).join('')}</select>
+      <label class="label">上課日期</label>
+      <input class="input" type="date" id="rec-date" value="${today()}">
+      <div class="input-row-3">
+        <div class="input-group"><label class="label">開始時間</label>
+          <input class="input" type="time" id="rec-time-start" value="${cur}"></div>
+        <div class="input-group"><label class="label">結束時間</label>
+          <input class="input" type="time" id="rec-time-end" value="${end}"></div>
+        <div class="input-group"><label class="label">地點</label>
+          <input class="input" type="text" id="rec-location" placeholder="例：體育館A場"></div>
+      </div>
+      <label class="label">堂數（消耗）</label>
+      <input class="input" type="number" id="rec-count" value="1" min="1">
+      <button class="btn btn-primary" onclick="doRecord()">確認記錄</button>
+    </div>
+    <div class="card">
+      <div class="section-label">新增購課</div>
+      <label class="label">選擇學生</label>
+      <select class="input" id="buy-student">${state.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select>
+      <div class="input-row" style="margin-bottom:10px">
+        <div class="input-group"><label class="label">購課日期</label>
+          <input class="input" type="date" id="buy-date" value="${today()}"></div>
+        <div class="input-group"><label class="label">備註（選填）</label>
+          <input class="input" type="text" id="buy-location" placeholder="例：LINE 匯款"></div>
+      </div>
+      <label class="label">購買堂數</label>
+      <input class="input" type="number" id="buy-count" value="10" min="1">
+      <button class="btn" onclick="doPurchase()">新增購課</button>
+    </div>`;
+}
+
+// ════════════════════════════════════════════
+// 設定 Tab（Notion + AI Key，全部從這裡輸入）
+// ════════════════════════════════════════════
+function renderSettings(c) {
+  const antKey  = getCfg(SK_ANT_KEY);
+  const nToken  = getCfg(SK_NOTION_TOK);
+  const nDbId   = getCfg(SK_NOTION_DB);
+  const mask = v => v ? v.slice(0,8)+'••••••••••••••••••••' : '';
+
+  c.innerHTML = `
+    <!-- ① Anthropic API Key -->
+    <div class="cfg-card">
+      <div class="cfg-title">✨ AI 筆記功能 — Anthropic API Key</div>
+      <div class="cfg-desc">
+        前往 <strong>console.anthropic.com</strong> → API Keys → 建立後複製貼上。<br>
+        Key 只存在你的手機/瀏覽器，不會上傳到任何地方。
+      </div>
+      <label class="label">Anthropic API Key</label>
+      <input class="input" type="password" id="ant-key-input" placeholder="sk-ant-api03-..." value="${mask(antKey)}" style="letter-spacing:1px">
+      <button class="btn btn-primary" onclick="saveAntKey()">儲存 API Key</button>
+      <div class="${antKey?'status-ok':'status-no'}">${antKey?'✅ 已設定，AI 功能啟用中':'⚠️ 尚未設定，AI 功能停用中'}</div>
+    </div>
+
+    <!-- ② Notion 設定 -->
+    <div class="cfg-card">
+      <div class="cfg-title">📝 Notion 同步設定</div>
+      <div class="cfg-desc">
+        <strong>Token：</strong>到 notion.so → Settings → Connections → 建立 Internal Integration，複製 Secret。<br>
+        <strong>資料庫 ID：</strong>打開你的 Notion 資料庫，URL 裡 notion.so/ 後面那段 32 碼英數字。
+      </div>
+      <label class="label">Notion Integration Token</label>
+      <input class="input" type="password" id="notion-tok-input" placeholder="ntn_..." value="${mask(nToken)}" style="letter-spacing:1px">
+      <label class="label">Notion 資料庫 ID</label>
+      <input class="input" type="text" id="notion-db-input" placeholder="32 碼英數字" value="${nDbId}">
+      <button class="btn btn-notion" onclick="saveNotionCfg()">💾 儲存 Notion 設定</button>
+      <div class="${(nToken&&nDbId)?'status-ok':'status-no'}">${(nToken&&nDbId)?'✅ Notion 已設定完成':'⚠️ 尚未設定，同步功能停用中'}</div>
+    </div>
+
+    <!-- ③ 同步按鈕 -->
+    <div class="card">
+      <div class="section-label">Notion 同步</div>
+      <button class="btn btn-sync" onclick="syncAllNotion()" ${!(nToken&&nDbId)?'disabled style="opacity:0.5"':''}>🔄 同步所有學生到 Notion</button>
+      <div id="sync-progress" style="display:none">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        <div id="progress-text" style="font-size:12px;color:#8e8e93;margin-top:6px;text-align:center"></div>
+      </div>
+    </div>
+
+    <!-- ④ 同步紀錄 -->
+    <div class="card">
+      <div class="section-label">同步紀錄</div>
+      ${state.syncLog.length===0
+        ? '<div style="font-size:13px;color:#8e8e93">尚無同步紀錄</div>'
+        : state.syncLog.slice(0,15).map(l=>`
+          <div style="padding:6px 0;border-bottom:1px solid #f2f2f7;font-size:12px">
+            <span style="color:${l.ok?'#3B6D11':'#A32D2D'}">${l.ok?'✅':'❌'}</span>
+            <span style="margin:0 6px;color:#1c1c1e">${l.name}</span>
+            <span style="color:#8e8e93">${l.time}</span>
+            ${l.msg?`<div style="color:#A32D2D;font-size:11px;margin-top:2px">${l.msg}</div>`:''}
+          </div>`).join('')}
+    </div>
+
+    <!-- ⑤ 欄位說明 -->
+    <div class="card">
+      <div class="section-label">Notion 資料庫欄位說明</div>
+      <p style="font-size:12px;color:#636366;line-height:1.9">
+        同步會更新：<strong>姓名</strong>（Title）・<strong>剩餘堂數</strong>（Number）・<strong>已上堂數</strong>（Number）・<strong>購買堂數</strong>（Number）・<strong>最後同步</strong>（Text）
+      </p>
+    </div>`;
+}
+
+function saveAntKey() {
+  const raw = document.getElementById('ant-key-input').value.trim();
+  if (raw.includes('•')) { showToast('⚠️ Key 未變更'); return; }
+  if (!raw.startsWith('sk-ant-')) { showToast('❌ 格式不對，應以 sk-ant- 開頭'); return; }
+  setCfg(SK_ANT_KEY, raw);
+  showToast('✅ API Key 已儲存'); render();
+}
+
+function saveNotionCfg() {
+  const tok = document.getElementById('notion-tok-input').value.trim();
+  const db  = document.getElementById('notion-db-input').value.trim();
+  if (tok.includes('•') || db === getCfg(SK_NOTION_DB)) {
+    // token 可能沒改，只改 db
+    if (!tok.includes('•') && tok) setCfg(SK_NOTION_TOK, tok);
+    if (db) setCfg(SK_NOTION_DB, db);
+  } else {
+    if (tok) setCfg(SK_NOTION_TOK, tok);
+    if (db)  setCfg(SK_NOTION_DB, db);
+  }
+  showToast('✅ Notion 設定已儲存'); render();
+}
+
+// ════════════════════════════════════════════
+// Notion API（多 CORS Proxy 自動切換）
+// ════════════════════════════════════════════
+const CORS_PROXIES = [
+  url => 'https://corsproxy.io/?url=' + encodeURIComponent(url),
+  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+];
+let activeProxy = 0;
+
+async function notionRequest(path, method, body) {
+  const token = getCfg(SK_NOTION_TOK);
+  if (!token) throw new Error('尚未設定 Notion Token，請到「設定」分頁填入');
+  const target = 'https://api.notion.com' + path;
+  let lastErr;
+  for (let i = 0; i < CORS_PROXIES.length; i++) {
+    const pi = (activeProxy + i) % CORS_PROXIES.length;
+    try {
+      const res = await fetch(CORS_PROXIES[pi](target), {
+        method,
+        headers: { 'Authorization':'Bearer '+token, 'Content-Type':'application/json', 'Notion-Version':'2022-06-28' },
+        body: body ? JSON.stringify(body) : undefined
+      });
+      if (!res.ok) { let m='HTTP '+res.status; try{const e=await res.json();m=e.message||m;}catch{}throw new Error(m); }
+      activeProxy = pi;
+      return res.json();
+    } catch(e) { lastErr = e; }
+  }
+  throw lastErr;
+}
+
+async function findOrCreateNotionPage(student) {
+  const dbId = getCfg(SK_NOTION_DB);
+  if (!dbId) throw new Error('尚未設定 Notion 資料庫 ID，請到「設定」分頁填入');
+  const map = loadNotionMap();
+  if (map[student.id]) return map[student.id];
+  const data = await notionRequest('/v1/databases/'+dbId+'/query','POST',{filter:{property:'姓名',title:{equals:student.name}}});
+  let pageId;
+  if (data.results?.length > 0) {
+    pageId = data.results[0].id;
+  } else {
+    const c = await notionRequest('/v1/pages','POST',{parent:{database_id:dbId},properties:{姓名:{title:[{text:{content:student.name}}]}}});
+    pageId = c.id;
+  }
+  map[student.id] = pageId; saveNotionMap(map);
+  return pageId;
+}
+
+async function updateNotionPage(student, pageId) {
+  const rem = getRemaining(student);
+  const ts = new Date().toISOString().slice(0,10)+' '+new Date().toTimeString().slice(0,5);
+  await notionRequest('/v1/pages/'+pageId,'PATCH',{properties:{
+    '剩餘堂數':{number:rem}, '已上堂數':{number:student.used},
+    '購買堂數':{number:student.totalBought}, '最後同步':{rich_text:[{text:{content:ts}}]}
+  }});
+}
+
+function addSyncLog(name, ok, msg) {
+  const time = new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+  state.syncLog.unshift({name, ok, msg, time});
+}
+function setSyncStatus(elId, msg, type) {
+  const el = document.getElementById(elId);
+  if (el) el.innerHTML = `<div class="sync-status sync-${type}">${msg}</div>`;
+}
+
+async function syncOneNotion(sid) {
+  const s = state.students.find(x=>x.id===sid);
+  setSyncStatus('sync-status-'+sid, '⏳ 同步中...', 'ing');
+  try {
+    const pageId = await findOrCreateNotionPage(s);
+    await updateNotionPage(s, pageId);
+    addSyncLog(s.name, true);
+    setSyncStatus('sync-status-'+sid, '✅ 已同步到 Notion', 'ok');
+    showToast('✅ Notion 同步成功');
+  } catch(e) {
+    addSyncLog(s.name, false, e.message);
+    setSyncStatus('sync-status-'+sid, '❌ '+e.message, 'err');
+    showToast('❌ 同步失敗：'+e.message);
+  }
+}
+
+async function syncAllNotion() {
+  const prog = document.getElementById('sync-progress');
+  if (prog) prog.style.display = 'block';
+  for (let i = 0; i < state.students.length; i++) {
+    const s = state.students[i];
+    const fill=document.getElementById('progress-fill'), txt=document.getElementById('progress-text');
+    if(fill) fill.style.width=Math.round((i+1)/state.students.length*100)+'%';
+    if(txt) txt.textContent='同步 '+s.name+'...';
+    try { await updateNotionPage(s, await findOrCreateNotionPage(s)); addSyncLog(s.name,true); }
+    catch(e) { addSyncLog(s.name,false,e.message); }
+  }
+  if (prog) prog.style.display = 'none';
+  render(); showToast('✅ Notion 全部同步完成');
+}
+
+// ════════════════════════════════════════════
+// AI 筆記
+// ════════════════════════════════════════════
+async function generateNote(sid) {
+  const s = state.students.find(x=>x.id===sid);
+  const input = document.getElementById('note-input-'+sid);
+  const btn   = document.getElementById('ai-btn-'+sid);
+  if (!input.value.trim()) { alert('請先輸入今天的上課狀況'); return; }
+  const antKey = getCfg(SK_ANT_KEY);
+  if (!antKey) { alert('請先到「設定」分頁填入 Anthropic API Key'); return; }
+  const raw = input.value.trim();
+  btn.textContent = '⏳ AI 整理中...'; btn.disabled = true;
+  const prev = s.notes.slice(0,2).map(n=>n.text).join('\n');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': antKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [{ role:'user', content:
+          '你是羽球教練助理。根據教練的口語描述，整理成簡短學習筆記（100字以內），格式：優點・待改進・下次重點。\n教練描述：'+raw+'\n過去筆記：'+(prev||'無')+'\n只輸出筆記內容，不要加前言。'
+        }]
+      })
+    });
+    if (!res.ok) {
+      const errJson = await res.json().catch(()=>({}));
+      throw new Error(errJson.error?.message || 'API 回應錯誤 '+res.status);
+    }
+    const data = await res.json();
+    s.notes.unshift({ date:today(), text:data.content?.[0]?.text||'整理失敗', ai:true });
+    input.value = '';
+    saveStudents();
+    showToast('✅ AI 筆記整理完成');
+  } catch(e) {
+    alert('AI 連線失敗：'+e.message+'\n\n請確認 API Key 是否正確，或網路是否正常。');
+  }
+  btn.textContent = '✨ AI 整理筆記'; btn.disabled = false;
+  render();
+}
+
+// ════════════════════════════════════════════
+// 匯出 PDF
+// ════════════════════════════════════════════
+function exportPrint(sid) {
+  const s = state.students.find(x=>x.id===sid);
+  const rem = getRemaining(s);
+  let balance = 0;
+  const rows = [...s.logs].reverse().map(l=>{ balance+=l.delta; return {...l,balance}; }).reverse();
+  const warn = rem<=2 ? `<div style="background:#FCEBEB;color:#A32D2D;border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:13px;font-weight:600;">⚠️ 課堂即將用完，請盡快購課</div>` : '';
+  const html = `<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1"><title>${s.name} 課堂紀錄</title>
+  <style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:720px;margin:40px auto;padding:0 24px;color:#1c1c1e}
+  h1{font-size:24px;font-weight:700;margin-bottom:4px}.sub{color:#8e8e93;font-size:13px;margin-bottom:28px}
+  .metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+  .metric{background:#f2f2f7;border-radius:10px;padding:14px;text-align:center}
+  .metric-num{font-size:28px;font-weight:700}.metric-lbl{font-size:11px;color:#8e8e93;margin-top:4px}
+  .rem-ok{color:#3B6D11}.rem-low{color:#A32D2D}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  th{background:#185FA5;color:#fff;padding:9px 10px;text-align:left;font-weight:600}
+  td{padding:9px 10px;border-bottom:1px solid #f2f2f7}tr:nth-child(even) td{background:#f9f9f9}
+  .plus{color:#3B6D11;font-weight:600}.minus{color:#A32D2D;font-weight:600}
+  .footer{margin-top:36px;color:#c7c7cc;font-size:11px;text-align:center;border-top:1px solid #f2f2f7;padding-top:16px}
+  .print-btn{display:block;margin:0 auto 24px;padding:10px 28px;background:#185FA5;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer;font-weight:600}
+  @media print{.print-btn{display:none}body{margin:20px auto}}</style></head><body>
+  <button class="print-btn" onclick="window.print()">🖨️ 列印 / 存成 PDF</button>
+  <h1>${s.name} 課堂紀錄</h1><div class="sub">製表日期：${today()}</div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-num">${s.totalBought}</div><div class="metric-lbl">購買課堂</div></div>
+    <div class="metric"><div class="metric-num">${s.used}</div><div class="metric-lbl">已上課堂</div></div>
+    <div class="metric"><div class="metric-num ${rem<=2?'rem-low':'rem-ok'}">${rem}</div><div class="metric-lbl">剩餘課堂</div></div>
+  </div>${warn}
+  <table><thead><tr><th>#</th><th>姓名</th><th>日期</th><th>開始</th><th>結束</th><th>地點</th><th>消耗</th><th>剩餘</th></tr></thead>
+  <tbody>${rows.map((l,i)=>`<tr><td>${l.type==='上課'?(i+1):''}</td><td>${s.name}</td><td>${l.date}</td><td>${l.timeStart||'—'}</td><td>${l.timeEnd||'—'}</td><td>${l.location||(l.type==='購課'?'購課':'—')}</td><td class="${l.delta>0?'plus':'minus'}">${l.delta>0?'+':''}${l.delta}</td><td>${l.balance}</td></tr>`).join('')}</tbody></table>
+  <div class="footer">此紀錄由羽球教練助理產生</div></body></html>`;
+  try {
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+  } catch(e) {
+    const win=window.open('','_blank');
+    if(win){win.document.write(html);win.document.close();}
+    else showToast('⚠️ 請允許瀏覽器彈出視窗');
+  }
+}
+
+// ════════════════════════════════════════════
+// 操作函式
+// ════════════════════════════════════════════
+function saveMemo(id) {
+  const s=state.students.find(x=>x.id===id);
+  s.memo=document.getElementById('memo-input-'+id).value.trim();
+  saveStudents(); render();
+}
+function deleteStudent(id) {
+  const s=state.students.find(x=>x.id===id);
+  if(!confirm('確定要刪除「'+s.name+'」的所有資料嗎？\n此動作無法復原。'))return;
+  state.students=state.students.filter(x=>x.id!==id);
+  saveStudents(); state.view='list'; state.selectedStudent=null; render();
+}
+function openStudent(id) { state.selectedStudent=id; state.view='detail'; render(); }
+function goBack() { state.view='list'; state.selectedStudent=null; render(); }
+function addLesson(id) {
+  const s=state.students.find(x=>x.id===id);
+  if(getRemaining(s)<=0){alert('課堂已用完，請先購課！');return;}
+  s.used++;
+  s.logs.unshift({date:today(),timeStart:nowTime(),timeEnd:'',location:'',type:'上課',delta:-1});
+  saveStudents(); render();
+}
+function addPurchase(id) {
+  const s=state.students.find(x=>x.id===id);
+  s.totalBought+=10;
+  s.logs.unshift({date:today(),timeStart:'',timeEnd:'',location:'',type:'購課',delta:10});
+  saveStudents(); render();
+}
+function addStudent() {
+  const name=prompt('學生姓名：'); if(!name)return;
+  const bought=parseInt(prompt('購買堂數：')||'10');
+  state.students.push({id:Date.now(),name,initials:name.slice(-1),totalBought:bought,used:0,memo:'',
+    logs:[{date:today(),timeStart:'',timeEnd:'',location:'',type:'購課',delta:bought}],notes:[]});
+  saveStudents(); render();
+}
+function doRecord() {
+  const id=parseInt(document.getElementById('rec-student').value);
+  const s=state.students.find(x=>x.id===id);
+  const count=parseInt(document.getElementById('rec-count').value)||1;
+  if(getRemaining(s)<count){alert('課堂不足！');return;}
+  s.used+=count;
+  s.logs.unshift({date:document.getElementById('rec-date').value,
+    timeStart:document.getElementById('rec-time-start').value||'',
+    timeEnd:document.getElementById('rec-time-end').value||'',
+    location:document.getElementById('rec-location').value.trim(),type:'上課',delta:-count});
+  saveStudents(); showToast('✅ 已記錄 '+s.name+' 上課 '+count+' 堂'); render();
+}
+function doPurchase() {
+  const id=parseInt(document.getElementById('buy-student').value);
+  const s=state.students.find(x=>x.id===id);
+  const count=parseInt(document.getElementById('buy-count').value)||10;
+  s.totalBought+=count;
+  s.logs.unshift({date:document.getElementById('buy-date').value||today(),
+    timeStart:'',timeEnd:'',location:document.getElementById('buy-location').value.trim(),type:'購課',delta:count});
+  saveStudents(); showToast('✅ 已為 '+s.name+' 新增 '+count+' 堂'); render();
+}
+
+render();
+</script>
+</body>
+</html>
