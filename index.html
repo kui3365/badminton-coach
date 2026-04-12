@@ -3,130 +3,203 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>羽球教練助理</title>
+<title>羽球教練助理 v6</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="羽球助理">
 <meta name="theme-color" content="#185FA5">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMTg1RkE1Ii8+PHRleHQgeT0iLjllbSIgZm9udC1zaXplPSI3NSIgeD0iMTIiPvCfmvE8L3RleHQ+PC9zdmc+">
 <style>
+/* ── Reset & Base ── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f2f2f7; min-height: 100vh; }
 .app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; background: #f2f2f7; }
-.header { background: #fff; border-bottom: 1px solid #e5e5ea; padding: 14px 16px; }
-.header-title { font-size: 18px; font-weight: 600; color: #1c1c1e; }
-.header-sub { font-size: 12px; color: #8e8e93; margin-top: 2px; }
+
+/* ── Header ── */
+.header { background: #fff; border-bottom: 1px solid #e5e5ea; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+.header-left .header-title { font-size: 18px; font-weight: 600; color: #1c1c1e; }
+.header-left .header-sub { font-size: 11px; color: #8e8e93; margin-top: 1px; }
+.header-sync { font-size: 11px; color: #185FA5; background: #E6F1FB; border-radius: 6px; padding: 3px 9px; font-weight: 600; white-space: nowrap; }
+
+/* ── Tab Bar ── */
 .tab-bar { display: flex; border-bottom: 1px solid #e5e5ea; background: #fff; }
-.tab { flex: 1; padding: 10px 2px; font-size: 11.5px; color: #8e8e93; text-align: center; cursor: pointer; border-bottom: 2px solid transparent; }
+.tab { flex: 1; padding: 10px 2px; font-size: 11.5px; color: #8e8e93; text-align: center; cursor: pointer; border-bottom: 2px solid transparent; user-select: none; }
 .tab.active { color: #185FA5; border-bottom: 2px solid #185FA5; font-weight: 600; }
 .content { flex: 1; padding: 12px; }
+
+/* ── Cards ── */
 .card { background: #fff; border-radius: 12px; border: 1px solid #e5e5ea; padding: 14px; margin-bottom: 10px; }
+.section-label { font-size: 11px; color: #8e8e93; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── Avatars ── */
 .avatar { width: 40px; height: 40px; border-radius: 50%; background: #E6F1FB; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; color: #185FA5; flex-shrink: 0; }
 .big-avatar { width: 54px; height: 54px; border-radius: 50%; background: #E6F1FB; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; color: #185FA5; flex-shrink: 0; }
+
+/* ── Student List ── */
 .student-row { display: flex; align-items: center; gap: 12px; cursor: pointer; }
 .student-name { font-size: 15px; font-weight: 600; color: #1c1c1e; }
 .student-meta { font-size: 12px; color: #8e8e93; margin-top: 2px; }
 .student-memo-preview { font-size: 12px; color: #8e8e93; margin-top: 3px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+
+/* ── Badges ── */
 .badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-.badge-ok { background: #EAF3DE; color: #3B6D11; }
-.badge-low { background: #FAEEDA; color: #854F0B; }
+.badge-ok   { background: #EAF3DE; color: #3B6D11; }
+.badge-low  { background: #FAEEDA; color: #854F0B; }
 .badge-zero { background: #FCEBEB; color: #A32D2D; }
-.section-label { font-size: 11px; color: #8e8e93; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── Metrics ── */
 .metric-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
 .metric { background: #f2f2f7; border-radius: 10px; padding: 10px; text-align: center; }
 .metric-num { font-size: 24px; font-weight: 600; color: #1c1c1e; }
 .metric-lbl { font-size: 11px; color: #8e8e93; margin-top: 2px; }
-.btn { display: block; width: 100%; padding: 11px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; color: #1c1c1e; font-size: 14px; cursor: pointer; text-align: center; margin-bottom: 8px; font-family: inherit; }
-.btn:active { opacity: 0.8; }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn-primary { background: #185FA5; color: #fff; border-color: #185FA5; font-weight: 600; }
-.btn-danger { background: #FCEBEB; color: #A32D2D; border-color: #F7C1C1; font-weight: 600; }
+
+/* ── Buttons ── */
+.btn { display: block; width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; color: #1c1c1e; font-size: 14px; cursor: pointer; text-align: center; margin-bottom: 8px; font-family: inherit; font-weight: 500; }
+.btn:active { opacity: 0.75; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary  { background: #185FA5; color: #fff; border-color: #185FA5; font-weight: 600; }
+.btn-danger   { background: #FCEBEB; color: #A32D2D; border-color: #F7C1C1; font-weight: 600; }
+.btn-export   { background: #E1F5EE; color: #0F6E56; border-color: #9FE1CB; font-weight: 600; }
+.btn-sync     { background: #F0E6FB; color: #6B21A8; border-color: #C4B5FD; font-weight: 600; }
+.btn-notion   { background: #F5F5F4; color: #1c1c1e; border-color: #D6D3D1; font-weight: 600; }
+.btn-schedule { background: #FFF3E0; color: #E65100; border-color: #FFCC80; font-weight: 600; }
+.btn-diag     { background: #E6F1FB; color: #185FA5; border-color: #A8CFEE; font-weight: 600; }
+.btn-gcal     { background: #E8F5E9; color: #1B5E20; border-color: #A5D6A7; font-weight: 600; }
 .btn-row { display: flex; gap: 8px; margin-bottom: 8px; }
 .btn-row .btn { margin-bottom: 0; }
-.btn-export { background: #E1F5EE; color: #0F6E56; border-color: #9FE1CB; font-weight: 600; }
-.btn-sync { background: #F0E6FB; color: #6B21A8; border-color: #C4B5FD; font-weight: 600; }
-.btn-notion { background: #F5F5F4; color: #1c1c1e; border-color: #D6D3D1; font-weight: 600; }
-.btn-schedule { background: #FFF3E0; color: #E65100; border-color: #FFCC80; font-weight: 600; }
-.btn-diag { background: #E6F1FB; color: #185FA5; border-color: #A8CFEE; font-weight: 600; }
-.input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; color: #1c1c1e; font-size: 15px; margin-bottom: 10px; font-family: inherit; -webkit-appearance: none; }
-.input:focus { outline: none; border-color: #185FA5; }
+
+/* ── Inputs ── */
+.input { width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; color: #1c1c1e; font-size: 15px; margin-bottom: 10px; font-family: inherit; -webkit-appearance: none; appearance: none; }
+.input:focus { outline: none; border-color: #185FA5; box-shadow: 0 0 0 3px rgba(24,95,165,0.12); }
 textarea.input { min-height: 72px; resize: vertical; }
+.label { font-size: 13px; color: #8e8e93; margin-bottom: 4px; display: block; font-weight: 500; }
+
+/* 搜尋欄 */
 .search-wrap { position: relative; margin-bottom: 10px; }
 .search-wrap input { padding-left: 36px; margin-bottom: 0; }
 .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #8e8e93; font-size: 15px; pointer-events: none; }
-.label { font-size: 13px; color: #8e8e93; margin-bottom: 4px; display: block; }
-.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 0; }
+
+/* 欄位排列 */
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
 .input-row .input-group { display: flex; flex-direction: column; }
 .input-row .input-group .input { margin-bottom: 0; }
-.input-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-.input-row-3 .input-group { display: flex; flex-direction: column; }
-.input-row-3 .input-group .input { margin-bottom: 0; }
+
+/* 記錄上課：時間+堂數一列 */
+.input-row-t { display: grid; grid-template-columns: 1fr 1fr 68px; gap: 8px; margin-bottom: 10px; align-items: end; }
+.input-row-t .input-group { display: flex; flex-direction: column; }
+.input-row-t .input-group .input { margin-bottom: 0; }
+
+/* 堂數窄欄 */
+.input-count { width: 100%; padding: 11px 6px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; color: #1c1c1e; font-size: 16px; font-family: inherit; -webkit-appearance: none; text-align: center; font-weight: 700; }
+.input-count:focus { outline: none; border-color: #185FA5; box-shadow: 0 0 0 3px rgba(24,95,165,0.12); }
+
+/* ── Log Rows ── */
 .log-row { display: grid; grid-template-columns: 76px 1fr 1fr 50px; align-items: center; gap: 6px; padding: 8px 0; border-bottom: 1px solid #f2f2f7; }
-.log-date { font-size: 12px; color: #8e8e93; }
-.log-time { font-size: 12px; color: #636366; }
+.log-date     { font-size: 12px; color: #8e8e93; }
+.log-time     { font-size: 12px; color: #636366; }
 .log-location { font-size: 12px; color: #1c1c1e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.log-num { font-size: 13px; font-weight: 600; text-align: right; }
-.log-num.plus { color: #3B6D11; }
+.log-num      { font-size: 13px; font-weight: 600; text-align: right; }
+.log-num.plus  { color: #3B6D11; }
 .log-num.minus { color: #A32D2D; }
 .log-header { display: grid; grid-template-columns: 76px 1fr 1fr 50px; gap: 6px; padding: 0 0 6px; border-bottom: 1px solid #e5e5ea; margin-bottom: 2px; }
 .log-header span { font-size: 11px; color: #8e8e93; font-weight: 600; }
 .log-header span:last-child { text-align: right; }
+
+/* 尖峰/離峰標籤 */
+.peak-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-left: 4px; vertical-align: middle; }
+.peak-on  { background: #FFE0CC; color: #7A2500; }
+.peak-off { background: #D4EDDA; color: #155724; }
+
+/* ── Notes & Memo ── */
 .note-box { background: #f2f2f7; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #1c1c1e; line-height: 1.6; margin-bottom: 8px; }
-.ai-tag { font-size: 11px; color: #185FA5; font-weight: 600; margin-bottom: 4px; }
+.ai-tag   { font-size: 11px; color: #185FA5; font-weight: 600; margin-bottom: 4px; }
 .memo-box { background: #FAEEDA; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #633806; line-height: 1.6; margin-bottom: 8px; font-style: italic; }
-.back-btn { font-size: 14px; color: #185FA5; cursor: pointer; margin-bottom: 12px; display: inline-block; }
-.empty-state { text-align: center; padding: 30px 20px; color: #8e8e93; font-size: 14px; line-height: 1.6; }
+
+/* ── Misc UI ── */
+.back-btn { font-size: 14px; color: #185FA5; cursor: pointer; margin-bottom: 12px; display: inline-block; font-weight: 500; }
+.empty-state { text-align: center; padding: 28px 20px; color: #8e8e93; font-size: 14px; line-height: 1.6; }
 .student-view-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 .no-result { text-align: center; padding: 24px; color: #8e8e93; font-size: 14px; }
+
+/* ── Sync Status ── */
 .sync-status { font-size: 12px; padding: 6px 10px; border-radius: 8px; margin-top: 6px; }
-.sync-ok { background: #EAF3DE; color: #3B6D11; }
+.sync-ok  { background: #EAF3DE; color: #3B6D11; }
 .sync-err { background: #FCEBEB; color: #A32D2D; }
 .sync-ing { background: #E6F1FB; color: #185FA5; }
-.save-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); background: #1c1c1e; color: #fff; font-size: 13px; padding: 8px 18px; border-radius: 20px; opacity: 0; transition: opacity 0.25s, transform 0.25s; z-index: 9999; pointer-events: none; white-space: nowrap; }
+
+/* ── Toast ── */
+.save-toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(60px); background: #1c1c1e; color: #fff; font-size: 13px; padding: 9px 20px; border-radius: 22px; opacity: 0; transition: opacity 0.22s, transform 0.22s; z-index: 9999; pointer-events: none; white-space: nowrap; }
 .save-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.progress-bar { height: 4px; background: #e5e5ea; border-radius: 2px; overflow: hidden; margin-top: 8px; }
+
+/* ── Progress Bar ── */
+.progress-bar  { height: 4px; background: #e5e5ea; border-radius: 2px; overflow: hidden; margin-top: 8px; }
 .progress-fill { height: 100%; background: #185FA5; border-radius: 2px; transition: width 0.4s; }
-.cfg-card { background: #FFF8E6; border: 1px solid #FFD966; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+
+/* ── Config Cards ── */
+.cfg-card  { background: #FFF8E6; border: 1px solid #FFD966; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
 .cfg-title { font-size: 13px; font-weight: 700; color: #854F0B; margin-bottom: 6px; }
-.cfg-desc { font-size: 12px; color: #633806; line-height: 1.6; margin-bottom: 10px; }
+.cfg-desc  { font-size: 12px; color: #633806; line-height: 1.65; margin-bottom: 10px; }
 .status-ok { font-size: 12px; color: #3B6D11; margin-top: -4px; margin-bottom: 4px; }
 .status-no { font-size: 12px; color: #A32D2D; margin-top: -4px; margin-bottom: 4px; }
-.diag-box { border-radius: 10px; padding: 12px; margin-top: 10px; font-size: 12px; line-height: 1.8; }
+
+/* ── Diagnostic ── */
+.diag-box  { border-radius: 10px; padding: 12px; margin-top: 10px; font-size: 12px; line-height: 1.8; }
 .diag-step { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
 .diag-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
 .diag-text { color: #1c1c1e; }
-.diag-err { background: #FCEBEB; border: 1px solid #F7C1C1; }
-.diag-ok  { background: #EAF3DE; border: 1px solid #B8DFA0; }
-.diag-ing { background: #E6F1FB; border: 1px solid #A8CFEE; }
+.diag-err  { background: #FCEBEB; border: 1px solid #F7C1C1; }
+.diag-ok   { background: #EAF3DE; border: 1px solid #B8DFA0; }
+.diag-ing  { background: #E6F1FB; border: 1px solid #A8CFEE; }
 .diag-warn { background: #FFF3CD; border: 1px solid #FFD966; color: #856404; }
-.date-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.date-nav-btn { background: #fff; border: 1px solid #e5e5ea; border-radius: 8px; padding: 7px 14px; font-size: 18px; cursor: pointer; color: #185FA5; line-height: 1; }
+
+/* ═══════════════════════════════════════
+   月曆樣式
+═══════════════════════════════════════ */
+.date-nav     { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.date-nav-btn { background: #fff; border: 1px solid #e5e5ea; border-radius: 8px; padding: 8px 16px; font-size: 20px; cursor: pointer; color: #185FA5; line-height: 1; }
 .date-nav-btn:active { background: #E6F1FB; }
-.date-center { text-align: center; flex: 1; }
-.date-display { font-size: 16px; font-weight: 700; color: #1c1c1e; }
-.date-weekday { font-size: 12px; color: #8e8e93; margin-top: 2px; }
-.today-btn { font-size: 12px; color: #185FA5; background: #E6F1FB; border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; margin-top: 4px; font-family: inherit; }
-.week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 12px; }
-.week-cell { text-align: center; cursor: pointer; }
-.week-cell-day { font-size: 10px; color: #8e8e93; margin-bottom: 3px; }
-.week-cell-num { width: 32px; height: 32px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; background: #f2f2f7; color: #636366; position: relative; }
-.week-cell-num.is-today { border: 2px solid #185FA5; }
-.week-cell-num.is-selected { background: #185FA5; color: #fff; }
-.week-cell-num.has-class { background: #E6F1FB; color: #185FA5; }
-.week-dot { position: absolute; bottom: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background: #FF9500; }
-.schedule-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f2f2f7; }
+.date-center  { text-align: center; flex: 1; }
+.date-display { font-size: 17px; font-weight: 700; color: #1c1c1e; }
+.today-btn    { font-size: 11px; color: #185FA5; background: #E6F1FB; border: none; border-radius: 6px; padding: 3px 10px; cursor: pointer; margin-top: 5px; font-family: inherit; display: inline-block; }
+
+/* 月曆格子 */
+.cal-headers    { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+.cal-header-cell{ text-align: center; font-size: 10px; color: #8e8e93; font-weight: 700; padding: 3px 0; }
+.cal-days       { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-cell { min-height: 48px; border-radius: 8px; background: #f2f2f7; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 2px; transition: opacity 0.12s; -webkit-tap-highlight-color: transparent; }
+.cal-cell:active   { opacity: 0.55; }
+.cal-empty { background: transparent !important; cursor: default; border: none !important; }
+.cal-day-num { font-size: 13px; font-weight: 500; color: #636366; line-height: 1; }
+.cal-count   { font-size: 10px; font-weight: 700; color: #185FA5; background: #E6F1FB; border-radius: 8px; padding: 1px 5px; margin-top: 3px; }
+.cal-cell.cal-today              { border: 2px solid #185FA5; }
+.cal-cell.cal-today .cal-day-num { color: #185FA5; font-weight: 700; }
+.cal-cell.cal-selected                 { background: #185FA5 !important; border-color: #185FA5 !important; }
+.cal-cell.cal-selected .cal-day-num   { color: #fff; }
+.cal-cell.cal-selected .cal-count     { background: rgba(255,255,255,0.28); color: #fff; }
+.cal-cell.cal-has-class                { background: #E6F1FB; }
+.cal-cell.cal-has-class .cal-day-num  { color: #185FA5; }
+
+/* ── 選取日期資訊列 ── */
+.sel-date-bar { background: #E6F1FB; border-radius: 8px; padding: 7px 12px; margin-top: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 600; color: #185FA5; }
+
+/* ── Schedule Items ── */
+.schedule-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f2f2f7; }
 .schedule-item:last-child { border-bottom: none; }
-.schedule-time-col { min-width: 80px; }
+.schedule-time-col   { min-width: 78px; }
 .schedule-time-start { font-size: 15px; font-weight: 700; color: #185FA5; }
-.schedule-time-end { font-size: 11px; color: #8e8e93; }
-.schedule-info { flex: 1; min-width: 0; }
-.schedule-name { font-size: 14px; font-weight: 600; color: #1c1c1e; }
-.schedule-loc { font-size: 12px; color: #8e8e93; margin-top: 2px; }
-.schedule-note { font-size: 12px; color: #636366; margin-top: 2px; font-style: italic; }
-.schedule-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.icon-btn { background: none; border: 1px solid #e5e5ea; border-radius: 7px; padding: 5px 8px; font-size: 14px; cursor: pointer; color: #636366; }
+.schedule-time-end   { font-size: 11px; color: #8e8e93; }
+.schedule-info  { flex: 1; min-width: 0; }
+.schedule-name  { font-size: 14px; font-weight: 600; color: #1c1c1e; }
+.schedule-loc   { font-size: 12px; color: #8e8e93; margin-top: 2px; }
+.schedule-note  { font-size: 12px; color: #636366; margin-top: 2px; font-style: italic; }
+.schedule-actions { display: flex; gap: 5px; flex-shrink: 0; align-items: flex-start; }
+
+.icon-btn { background: none; border: 1px solid #e5e5ea; border-radius: 7px; padding: 5px 7px; font-size: 13px; cursor: pointer; color: #636366; }
 .icon-btn:active { background: #f2f2f7; }
-.icon-btn.del { border-color: #F7C1C1; color: #A32D2D; }
+.icon-btn.del    { border-color: #F7C1C1; color: #A32D2D; }
+.icon-btn.gcal   { border-color: #A5D6A7; color: #1B5E20; }
+
+/* ── Modal ── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; overflow-y: auto; padding: 20px; }
 .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
 .modal-box { background: #fff; border-radius: 16px; padding: 20px; width: 100%; max-width: 440px; margin: auto; }
@@ -138,8 +211,11 @@ textarea.input { min-height: 72px; resize: vertical; }
 <body>
 <div class="app" id="app">
   <div class="header">
-    <div class="header-title">🏸 羽球教練助理</div>
-    <div class="header-sub">教練管理模式</div>
+    <div class="header-left">
+      <div class="header-title">🏸 羽球教練助理</div>
+      <div class="header-sub" id="header-sub">教練管理模式</div>
+    </div>
+    <div class="header-sync" id="header-sync" style="display:none">⏳ 同步中</div>
   </div>
   <div class="tab-bar">
     <div class="tab active" id="tab-students" onclick="switchTab('students')">學生列表</div>
@@ -158,24 +234,19 @@ textarea.input { min-height: 72px; resize: vertical; }
 </div>
 
 <script>
-// ════════════════════════════════════════════
-// ★ 核心改動：透過 Vercel API Route 呼叫 Notion
-//   完全解決 CORS 問題
-// ════════════════════════════════════════════
-
-// 自動偵測 API 路徑（本地開發 or Vercel 生產環境都能用）
+// ══════════════════════════════════════════
+//  Notion API Proxy（透過 Vercel API Route）
+// ══════════════════════════════════════════
 const API_BASE = '/api/notion';
 
 async function notionRequest(path, method = 'GET', body = null) {
   const token = getCfg(SK_NOTION_TOK);
   if (!token) throw new Error('尚未設定 Notion Token，請到「設定」填入');
-
   const res = await fetch(API_BASE, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ path, method, token, body }),
   });
-
   const data = await res.json();
   if (!res.ok) {
     if (res.status === 401) throw new Error('Token 無效（401），請重新設定');
@@ -186,38 +257,54 @@ async function notionRequest(path, method = 'GET', body = null) {
   return data;
 }
 
-// ── 工具函式 ──
-function today() { return new Date().toISOString().slice(0,10); }
+// ══ 工具函式 ══════════════════════════════
+function today() { return new Date().toISOString().slice(0, 10); }
+
 function nowTime() {
   const d = new Date();
   return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 }
+
+// 整點預設：捨去分鐘（減少教練調整次數）
+function nowTimeRounded() {
+  return String(new Date().getHours()).padStart(2,'0') + ':00';
+}
+
+// 在整點基礎上加 N 小時
+function addHoursToRounded(timeStr, hours) {
+  const h = parseInt(timeStr.split(':')[0], 10);
+  return String((h + hours) % 24).padStart(2,'0') + ':00';
+}
+
 function formatTimeRange(s, e) {
   if (s && e) return s + ' – ' + e;
   if (s) return s;
   return '—';
 }
+
 function addDays(d, n) {
   const dt = new Date(d + 'T00:00:00');
   dt.setDate(dt.getDate() + n);
-  return dt.toISOString().slice(0,10);
+  return dt.toISOString().slice(0, 10);
 }
-function getWeekDates(d) {
-  const dt = new Date(d + 'T00:00:00');
-  const day = dt.getDay();
-  const mon = new Date(dt); mon.setDate(dt.getDate() - ((day + 6) % 7));
-  return Array.from({length:7}, (_,i) => {
-    const x = new Date(mon); x.setDate(mon.getDate() + i);
-    return x.toISOString().slice(0,10);
-  });
-}
+
 function formatDbId(id) {
   const clean = id.replace(/-/g, '');
   if (clean.length === 32) return clean.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5');
   return id;
 }
 
-// ── LocalStorage keys ──
+function monthLabel(ym) {
+  const [y, m] = ym.split('-').map(Number);
+  const names = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  return y + '年' + names[m - 1];
+}
+
+function weekdayLabel(dateStr) {
+  return '日一二三四五六'[new Date(dateStr + 'T00:00:00').getDay()];
+}
+
+// ══ LocalStorage Keys ════════════════════
 const SK_STUDENTS   = 'bmc_students';
 const SK_NOTION_MAP = 'bmc_notion_map';
 const SK_SCHEDULE   = 'bmc_schedule';
@@ -228,26 +315,27 @@ const SK_NOTION_DB  = 'bmc_notion_db_id';
 function getCfg(key) { return localStorage.getItem(key) || ''; }
 function setCfg(key, val) { localStorage.setItem(key, val); }
 
+// ══ 預設學生資料 ══════════════════════════
 const DEFAULT_STUDENTS = [
-  { id:1, name:'小明', initials:'明', totalBought:20, used:14, memo:'電腦工程師，週末才有空，個性認真',
+  { id:1, name:'小明', initials:'明', totalBought:20, used:14, memo:'電腦工程師，週末才有空，個性認真', updatedAt:'2024-06-10',
     logs:[
       {date:'2024-06-10',timeStart:'10:00',timeEnd:'12:00',location:'體育館A場',type:'上課',delta:-1},
       {date:'2024-06-03',timeStart:'10:00',timeEnd:'12:00',location:'體育館A場',type:'上課',delta:-1},
-      {date:'2024-05-28',timeStart:'09:30',timeEnd:'11:30',location:'體育館B場',type:'上課',delta:-1},
-      {date:'2024-05-20',timeStart:'',timeEnd:'',location:'',type:'購課',delta:10},
+      {date:'2024-05-28',timeStart:'09:00',timeEnd:'11:00',location:'體育館B場',type:'上課',delta:-1},
+      {date:'2024-05-20',timeStart:'',timeEnd:'',location:'',type:'購課',delta:10,peakType:'離峰'},
       {date:'2024-05-10',timeStart:'10:00',timeEnd:'12:00',location:'體育館A場',type:'上課',delta:-1},
-      {date:'2024-04-18',timeStart:'',timeEnd:'',location:'',type:'購課',delta:10},
+      {date:'2024-04-18',timeStart:'',timeEnd:'',location:'',type:'購課',delta:10,peakType:'尖峰'},
       {date:'2024-04-10',timeStart:'10:00',timeEnd:'12:00',location:'體育館A場',type:'上課',delta:-1}
     ],
     notes:[{date:'2024-06-10',text:'優點：反手擊球進步明顯。待改進：步伐移動稍慢，後場銜接不夠流暢。下次重點：後場高遠球落點練習。',ai:true}] },
-  { id:2, name:'小華', initials:'華', totalBought:10, used:9, memo:'台北體大體保生，基礎很好，主攻殺球',
+  { id:2, name:'小華', initials:'華', totalBought:10, used:9, memo:'台北體大體保生，基礎很好，主攻殺球', updatedAt:'2024-06-09',
     logs:[
       {date:'2024-06-09',timeStart:'14:00',timeEnd:'16:00',location:'體育館C場',type:'上課',delta:-1},
       {date:'2024-06-02',timeStart:'14:00',timeEnd:'16:00',location:'體育館C場',type:'上課',delta:-1},
-      {date:'2024-05-25',timeStart:'',timeEnd:'',location:'',type:'購課',delta:10}
+      {date:'2024-05-25',timeStart:'',timeEnd:'',location:'',type:'購課',delta:10,peakType:'尖峰'}
     ],
     notes:[{date:'2024-06-09',text:'優點：發球穩定，戰術意識不錯。待改進：殺球力道不足，手腕爆發力需加強。下次重點：手腕爆發力訓練。',ai:true}] },
-  { id:3, name:'小美', initials:'美', totalBought:15, used:5, memo:'',
+  { id:3, name:'小美', initials:'美', totalBought:15, used:5, memo:'', updatedAt:'2024-06-08',
     logs:[
       {date:'2024-06-08',timeStart:'11:00',timeEnd:'13:00',location:'社區球場',type:'上課',delta:-1},
       {date:'2024-05-30',timeStart:'11:00',timeEnd:'13:00',location:'社區球場',type:'上課',delta:-1},
@@ -256,6 +344,7 @@ const DEFAULT_STUDENTS = [
     notes:[] },
 ];
 
+// ══ 載入/儲存 ═════════════════════════════
 function loadStudents() {
   try {
     const raw = localStorage.getItem(SK_STUDENTS);
@@ -264,50 +353,66 @@ function loadStudents() {
       parsed.forEach(s => {
         s.logs = s.logs.map(l => ({
           timeStart: l.timeStart !== undefined ? l.timeStart : (l.time || ''),
-          timeEnd: l.timeEnd !== undefined ? l.timeEnd : '',
-          location: l.location || '',
-          date: l.date, type: l.type, delta: l.delta
+          timeEnd:   l.timeEnd   !== undefined ? l.timeEnd   : '',
+          location:  l.location  || '',
+          date:      l.date, type: l.type, delta: l.delta,
+          peakType:  l.peakType  || ''
         }));
+        if (!s.updatedAt) s.updatedAt = s.logs.length ? s.logs[0].date : today();
       });
       return parsed;
     }
   } catch(e) {}
-  return DEFAULT_STUDENTS;
+  return JSON.parse(JSON.stringify(DEFAULT_STUDENTS));
 }
-function saveStudents() {
-  try { localStorage.setItem(SK_STUDENTS, JSON.stringify(state.students)); showToast('✅ 已自動儲存'); } catch(e) {}
-}
-function loadNotionMap() { try { return JSON.parse(localStorage.getItem(SK_NOTION_MAP) || '{}'); } catch { return {}; } }
-function saveNotionMap(m) { localStorage.setItem(SK_NOTION_MAP, JSON.stringify(m)); }
-function loadSchedule() { try { return JSON.parse(localStorage.getItem(SK_SCHEDULE) || '[]'); } catch { return []; } }
-function saveSchedule() { try { localStorage.setItem(SK_SCHEDULE, JSON.stringify(state.schedule)); } catch(e) {} }
 
+function saveStudents(silent) {
+  try {
+    localStorage.setItem(SK_STUDENTS, JSON.stringify(state.students));
+    if (!silent) showToast('✅ 已自動儲存');
+  } catch(e) {}
+}
+
+function loadNotionMap()  { try { return JSON.parse(localStorage.getItem(SK_NOTION_MAP) || '{}'); } catch { return {}; } }
+function saveNotionMap(m) { localStorage.setItem(SK_NOTION_MAP, JSON.stringify(m)); }
+function loadSchedule()   { try { return JSON.parse(localStorage.getItem(SK_SCHEDULE) || '[]'); } catch { return []; } }
+function saveSchedule()   { try { localStorage.setItem(SK_SCHEDULE, JSON.stringify(state.schedule)); } catch(e) {} }
+
+// ══ Toast ════════════════════════════════
 let toastTimer = null;
 function showToast(msg) {
   const el = document.getElementById('save-toast');
   el.textContent = msg;
   el.classList.add('show');
   if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
 }
 
+// ══ App State ════════════════════════════
 const state = {
   tab: 'students', selectedStudent: null, view: 'list', search: '',
-  students: loadStudents(), syncLog: [], schedule: loadSchedule(), scheduleDate: today(),
+  students:      loadStudents(),
+  syncLog:       [],
+  schedule:      loadSchedule(),
+  scheduleDate:  today(),
+  scheduleMonth: today().slice(0, 7),
 };
 
 function getRemaining(s) { return s.totalBought - s.used; }
+
 function getBadge(rem) {
   if (rem <= 0) return '<span class="badge badge-zero">已用完</span>';
-  if (rem <= 2) return '<span class="badge badge-low">剩 '+rem+' 堂</span>';
-  return '<span class="badge badge-ok">剩 '+rem+' 堂</span>';
+  if (rem <= 2) return '<span class="badge badge-low">剩 ' + rem + ' 堂</span>';
+  return '<span class="badge badge-ok">剩 ' + rem + ' 堂</span>';
 }
+
 function switchTab(t) {
   state.tab = t; state.view = 'list';
   document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('tab-' + t).classList.add('active');
   render();
 }
+
 function render() {
   const c = document.getElementById('main-content');
   if (state.tab === 'students') {
@@ -321,23 +426,36 @@ function render() {
   }
 }
 
-// ════ 學生列表 ════
+// ══════════════════════════════════════════
+//  學生列表（依最近更新時間排序）
+// ══════════════════════════════════════════
 function renderList(c) {
-  const low = state.students.filter(s => getRemaining(s) <= 2).length;
+  const low     = state.students.filter(s => getRemaining(s) <= 2).length;
   const keyword = state.search.trim();
-  const filtered = keyword ? state.students.filter(s => s.name.includes(keyword)) : state.students;
+  const filtered = keyword
+    ? state.students.filter(s => s.name.includes(keyword))
+    : [...state.students];
+
+  // ★ 依最近更新時間排序（近期有上課/改資料的排在最上方）
+  filtered.sort((a, b) => {
+    const da = a.updatedAt || (a.logs.length ? a.logs[0].date : '0000-00-00');
+    const db = b.updatedAt || (b.logs.length ? b.logs[0].date : '0000-00-00');
+    return db.localeCompare(da);
+  });
+
   c.innerHTML = `
     <div class="metric-row">
       <div class="metric"><div class="metric-num">${state.students.length}</div><div class="metric-lbl">學生</div></div>
       <div class="metric"><div class="metric-num" style="color:#A32D2D">${low}</div><div class="metric-lbl">課堂不足</div></div>
-      <div class="metric"><div class="metric-num">${state.students.reduce((a,s)=>a+getRemaining(s),0)}</div><div class="metric-lbl">總剩餘堂</div></div>
+      <div class="metric"><div class="metric-num">${state.students.reduce((a, s) => a + getRemaining(s), 0)}</div><div class="metric-lbl">總剩餘堂</div></div>
     </div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input class="input" type="text" id="search-input" placeholder="搜尋學生姓名..." value="${keyword}" oninput="onSearch(this.value)">
     </div>
-    ${filtered.length === 0 ? `<div class="no-result">找不到「${keyword}」的學生</div>`
-      : filtered.map(s=>`
+    ${filtered.length === 0
+      ? `<div class="no-result">找不到「${keyword}」的學生</div>`
+      : filtered.map(s => `
         <div class="card" onclick="openStudent(${s.id})">
           <div class="student-row">
             <div class="avatar">${s.initials}</div>
@@ -351,27 +469,37 @@ function renderList(c) {
         </div>`).join('')}
     <button class="btn" style="margin-top:4px" onclick="addStudent()">+ 新增學生</button>`;
 }
+
 function onSearch(val) {
   state.search = val;
   renderList(document.getElementById('main-content'));
-  const input = document.getElementById('search-input');
-  if (input) { input.focus(); input.setSelectionRange(val.length, val.length); }
+  const inp = document.getElementById('search-input');
+  if (inp) { inp.focus(); inp.setSelectionRange(val.length, val.length); }
 }
 
-// ════ 學生詳情 ════
+// ══════════════════════════════════════════
+//  學生詳情
+// ══════════════════════════════════════════
 function renderLogRows(logs) {
   if (!logs.length) return '<div style="font-size:13px;color:#8e8e93;padding:8px 0">尚無紀錄</div>';
-  return `<div class="log-header"><span>日期</span><span>時間區間</span><span>地點</span><span style="text-align:right">變動</span></div>
-    ${logs.map(l => `<div class="log-row">
-      <span class="log-date">${l.date}</span>
-      <span class="log-time">${formatTimeRange(l.timeStart, l.timeEnd)}</span>
-      <span class="log-location">${l.location || (l.type === '購課' ? '（購課）' : '—')}</span>
-      <span class="log-num ${l.delta>0?'plus':'minus'}">${l.delta>0?'+'+l.delta:l.delta}</span>
-    </div>`).join('')}`;
+  return `
+    <div class="log-header"><span>日期</span><span>時間</span><span>地點</span><span style="text-align:right">變動</span></div>
+    ${logs.map(l => {
+      let locText = l.location || (l.type === '購課' ? '購課' : '—');
+      const peakHtml = l.peakType
+        ? `<span class="peak-tag ${l.peakType === '尖峰' ? 'peak-on' : 'peak-off'}">${l.peakType}</span>`
+        : '';
+      return `<div class="log-row">
+        <span class="log-date">${l.date}</span>
+        <span class="log-time">${formatTimeRange(l.timeStart, l.timeEnd)}</span>
+        <span class="log-location">${locText}${peakHtml}</span>
+        <span class="log-num ${l.delta > 0 ? 'plus' : 'minus'}">${l.delta > 0 ? '+' + l.delta : l.delta}</span>
+      </div>`;
+    }).join('')}`;
 }
 
 function renderDetail(c) {
-  const s = state.students.find(x=>x.id===state.selectedStudent);
+  const s = state.students.find(x => x.id === state.selectedStudent);
   const rem = getRemaining(s);
   const hasAiKey = !!getCfg(SK_ANT_KEY);
   c.innerHTML = `
@@ -384,7 +512,7 @@ function renderDetail(c) {
       <div class="metric-row">
         <div class="metric"><div class="metric-num">${s.totalBought}</div><div class="metric-lbl">購買</div></div>
         <div class="metric"><div class="metric-num">${s.used}</div><div class="metric-lbl">已上</div></div>
-        <div class="metric"><div class="metric-num" style="color:${rem<=2?'#A32D2D':'#3B6D11'}">${rem}</div><div class="metric-lbl">剩餘</div></div>
+        <div class="metric"><div class="metric-num" style="color:${rem <= 2 ? '#A32D2D' : '#3B6D11'}">${rem}</div><div class="metric-lbl">剩餘</div></div>
       </div>
       <div class="btn-row">
         <button class="btn" onclick="addLesson(${s.id})">記錄上課 −1</button>
@@ -392,22 +520,20 @@ function renderDetail(c) {
       </div>
       <button class="btn btn-export" onclick="exportPrint(${s.id})">📄 匯出給學生（存PDF）</button>
       <button class="btn btn-schedule" style="margin-top:0" onclick="scheduleFromStudent(${s.id})">📅 為此學生排課</button>
-      <button class="btn btn-notion" style="margin-top:0" onclick="syncOneNotion(${s.id})">📝 同步到 Notion</button>
-      <div id="sync-status-${s.id}"></div>
     </div>
     <div class="card">
       <div class="section-label">教練備註</div>
       ${s.memo ? `<div class="memo-box">${s.memo}</div>` : '<div style="font-size:13px;color:#8e8e93;margin-bottom:8px">尚無備註</div>'}
-      <textarea class="input" id="memo-input-${s.id}" placeholder="記錄對這位學生的印象...">${s.memo||''}</textarea>
+      <textarea class="input" id="memo-input-${s.id}" placeholder="記錄對這位學生的印象...">${s.memo || ''}</textarea>
       <button class="btn" onclick="saveMemo(${s.id})">儲存備註</button>
     </div>
     <div class="card">
       <div class="section-label">學習狀況（AI 整理筆記）</div>
       ${!hasAiKey ? `<div style="background:#FFF3CD;border:1px solid #FFD966;border-radius:10px;padding:10px 12px;font-size:13px;color:#856404;margin-bottom:10px;line-height:1.6;">⚠️ 請先到「設定」分頁填入 Anthropic API Key 才能使用 AI 功能</div>` : ''}
-      ${s.notes.length===0 ? '<div class="empty-state">尚無筆記<br>輸入上課狀況後，AI 幫你整理</div>'
-        : s.notes.map(n=>`<div class="note-box"><div class="ai-tag">✨ AI 整理・${n.date}</div>${n.text}</div>`).join('')}
+      ${s.notes.length === 0 ? '<div class="empty-state">尚無筆記<br>輸入上課狀況後，AI 幫你整理</div>'
+        : s.notes.map(n => `<div class="note-box"><div class="ai-tag">✨ AI 整理・${n.date}</div>${n.text}</div>`).join('')}
       <textarea class="input" id="note-input-${s.id}" placeholder="口語輸入今天上課狀況..."></textarea>
-      <button class="btn btn-primary" id="ai-btn-${s.id}" onclick="generateNote(${s.id})" ${!hasAiKey?'disabled':''}>${hasAiKey?'✨ AI 整理筆記':'✨ AI 整理筆記（需設定 Key）'}</button>
+      <button class="btn btn-primary" id="ai-btn-${s.id}" onclick="generateNote(${s.id})" ${!hasAiKey ? 'disabled' : ''}>${hasAiKey ? '✨ AI 整理筆記' : '✨ AI 整理筆記（需設定 Key）'}</button>
     </div>
     <div class="card"><div class="section-label">上課紀錄</div>${renderLogRows(s.logs)}</div>
     <div class="card"><div class="section-label">危險操作</div>
@@ -415,150 +541,322 @@ function renderDetail(c) {
     </div>`;
 }
 
-// ════ 排課 ════
+// ══════════════════════════════════════════
+//  月曆 View（★ 新功能）
+// ══════════════════════════════════════════
+function buildMonthCalendar(yearMonth) {
+  const [year, month] = yearMonth.split('-').map(Number);
+  const firstDay     = new Date(year, month - 1, 1);
+  const daysInMonth  = new Date(year, month, 0).getDate();
+  const startDow     = (firstDay.getDay() + 6) % 7; // Mon=0 … Sun=6
+  const todayStr     = today();
+
+  const headers = ['一','二','三','四','五','六','日']
+    .map(d => `<div class="cal-header-cell">${d}</div>`).join('');
+
+  let cells = '';
+  for (let i = 0; i < startDow; i++) cells += '<div class="cal-cell cal-empty"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds    = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const count = state.schedule.filter(x => x.date === ds).length;
+    const isToday = ds === todayStr;
+    const isSel   = ds === state.scheduleDate;
+    let cls = 'cal-cell';
+    if (isSel)              cls += ' cal-selected';
+    else if (count > 0)     cls += ' cal-has-class';
+    if (isToday && !isSel)  cls += ' cal-today';
+    cells += `<div class="${cls}" onclick="selectScheduleDate('${ds}')">
+      <div class="cal-day-num">${d}</div>
+      ${count > 0 ? `<div class="cal-count">${count}</div>` : ''}
+    </div>`;
+  }
+  return `<div class="cal-headers">${headers}</div><div class="cal-days">${cells}</div>`;
+}
+
+// ══════════════════════════════════════════
+//  排課頁（月曆模式）
+// ══════════════════════════════════════════
 function renderSchedule(c) {
-  const sel = state.scheduleDate, weekDates = getWeekDates(sel), todayStr = today();
-  const weekCells = weekDates.map((d, i) => {
-    const dayLabel = ['一','二','三','四','五','六','日'][i];
-    const count = state.schedule.filter(x => x.date === d).length;
-    const isToday = d === todayStr, isSel = d === sel;
-    let cls = 'week-cell-num';
-    if (isSel) cls += ' is-selected'; else if (count > 0) cls += ' has-class';
-    if (isToday) cls += ' is-today';
-    return `<div class="week-cell" onclick="selectScheduleDate('${d}')"><div class="week-cell-day">${dayLabel}</div>
-      <div class="${cls}">${d.slice(8)}${(!isSel&&count>0)?'<span class="week-dot"></span>':''}</div></div>`;
-  }).join('');
-  const dayItems = state.schedule.filter(x=>x.date===sel).sort((a,b)=>(a.timeStart||'').localeCompare(b.timeStart||''));
-  const itemsHtml = dayItems.length === 0 ? `<div class="empty-state" style="padding:20px 0">今天沒有排課</div>`
+  const sel      = state.scheduleDate;
+  const todayStr = today();
+  const dayItems = state.schedule
+    .filter(x => x.date === sel)
+    .sort((a, b) => (a.timeStart || '').localeCompare(b.timeStart || ''));
+
+  const itemsHtml = dayItems.length === 0
+    ? `<div class="empty-state" style="padding:16px 0">這天沒有排課<br><small style="color:#c7c7cc">點上方月曆選擇日期，或直接新增</small></div>`
     : dayItems.map(item => {
-        const stu = state.students.find(s=>s.id===item.studentId);
+        const stu = state.students.find(s => s.id === item.studentId);
         return `<div class="schedule-item">
-          <div class="schedule-time-col"><div class="schedule-time-start">${item.timeStart||'—'}</div><div class="schedule-time-end">${item.timeEnd?'至 '+item.timeEnd:''}</div></div>
-          <div class="schedule-info"><div class="schedule-name">${item.studentName}</div>
-            <div class="schedule-loc">${item.location||'未設定地點'} · 剩 ${stu?getRemaining(stu):'?'} 堂</div>
-            ${item.note?`<div class="schedule-note">${item.note}</div>`:''}</div>
+          <div class="schedule-time-col">
+            <div class="schedule-time-start">${item.timeStart || '—'}</div>
+            <div class="schedule-time-end">${item.timeEnd ? '至 ' + item.timeEnd : ''}</div>
+          </div>
+          <div class="schedule-info">
+            <div class="schedule-name">${item.studentName}</div>
+            <div class="schedule-loc">${item.location || '未設定地點'} · 剩 ${stu ? getRemaining(stu) : '?'} 堂</div>
+            ${item.note ? `<div class="schedule-note">${item.note}</div>` : ''}
+          </div>
           <div class="schedule-actions">
+            <button class="icon-btn gcal" title="加入 Google 行事曆" onclick="openGoogleCal('${item.id}')">📅</button>
             <button class="icon-btn" onclick="openEditSchedule('${item.id}')">✏️</button>
             <button class="icon-btn del" onclick="deleteScheduleItem('${item.id}')">🗑</button>
-          </div></div>`;
+          </div>
+        </div>`;
       }).join('');
+
+  const selLabel = sel
+    ? sel.replace(/-/g, '/') + '（週' + weekdayLabel(sel) + '）'
+    : '選擇日期';
+
   c.innerHTML = `
     <div class="card">
       <div class="date-nav">
-        <button class="date-nav-btn" onclick="shiftScheduleDate(-1)">‹</button>
+        <button class="date-nav-btn" onclick="shiftScheduleMonth(-1)">‹</button>
         <div class="date-center">
-          <div class="date-display">${sel.replace(/-/g,'/')}</div>
-          <div class="date-weekday">週${'日一二三四五六'[new Date(sel+'T00:00:00').getDay()]}</div>
-          ${sel!==todayStr?`<button class="today-btn" onclick="selectScheduleDate('${todayStr}')">回到今天</button>`:''}
+          <div class="date-display">${monthLabel(state.scheduleMonth)}</div>
+          ${state.scheduleMonth !== todayStr.slice(0, 7)
+            ? `<button class="today-btn" onclick="goToToday()">回到本月</button>`
+            : ''}
         </div>
-        <button class="date-nav-btn" onclick="shiftScheduleDate(1)">›</button>
+        <button class="date-nav-btn" onclick="shiftScheduleMonth(1)">›</button>
       </div>
-      <div class="week-grid">${weekCells}</div>
-      <input type="date" class="input" value="${sel}" onchange="selectScheduleDate(this.value)" style="margin-bottom:0;font-size:14px;">
+      ${buildMonthCalendar(state.scheduleMonth)}
+      <div class="sel-date-bar">
+        <span>📌 ${selLabel}</span>
+        <span style="font-size:12px;font-weight:500;color:#185FA5">${dayItems.length} 堂課</span>
+      </div>
     </div>
     <div class="card">
-      <div class="section-label">當天課表（${dayItems.length} 堂）</div>
+      <div class="section-label">課表（${selLabel}）</div>
       ${itemsHtml}
-      <button class="btn btn-primary" style="margin-top:${dayItems.length?'10':'0'}px" onclick="openAddSchedule()">+ 新增排課</button>
+      <button class="btn btn-primary" style="margin-top:${dayItems.length ? '10' : '0'}px" onclick="openAddSchedule()">+ 新增排課</button>
     </div>`;
 }
-function selectScheduleDate(d) { if(d){ state.scheduleDate=d; render(); } }
-function shiftScheduleDate(n) { state.scheduleDate=addDays(state.scheduleDate,n); render(); }
-function scheduleFromStudent(sid) {
-  state.tab='schedule'; state.scheduleDate=today();
-  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
-  document.getElementById('tab-schedule').classList.add('active');
-  render(); openAddSchedule(sid);
+
+// ── 月份導航 ──
+function selectScheduleDate(d) {
+  if (!d) return;
+  state.scheduleDate  = d;
+  state.scheduleMonth = d.slice(0, 7);
+  render();
 }
+
+function shiftScheduleMonth(n) {
+  const [y, m] = state.scheduleMonth.split('-').map(Number);
+  const dt = new Date(y, m - 1 + n, 1);
+  state.scheduleMonth = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0');
+  render();
+}
+
+function goToToday() {
+  state.scheduleDate  = today();
+  state.scheduleMonth = today().slice(0, 7);
+  render();
+}
+
+function scheduleFromStudent(sid) {
+  state.tab = 'schedule';
+  state.scheduleDate  = today();
+  state.scheduleMonth = today().slice(0, 7);
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-schedule').classList.add('active');
+  render();
+  openAddSchedule(sid);
+}
+
+// ── 排課 Modal ──
 function scheduleFormHtml(item, presetSid, defStart, defEnd) {
-  const opts = state.students.map(s=>`<option value="${s.id}" ${(item?item.studentId:presetSid)===s.id?'selected':''}>${s.name}（剩 ${getRemaining(s)} 堂）</option>`).join('');
+  const opts = state.students.map(s =>
+    `<option value="${s.id}" ${(item ? item.studentId : presetSid) === s.id ? 'selected' : ''}>${s.name}（剩 ${getRemaining(s)} 堂）</option>`
+  ).join('');
   const e = !!item;
-  return `<label class="label">學生</label><select class="input" id="sch-student">${opts}</select>
-    <label class="label">日期</label><input class="input" type="date" id="sch-date" value="${e?item.date:state.scheduleDate}">
+  return `
+    <label class="label">學生</label>
+    <select class="input" id="sch-student">${opts}</select>
+    <label class="label">日期</label>
+    <input class="input" type="date" id="sch-date" value="${e ? item.date : state.scheduleDate}">
     <div class="input-row" style="margin-bottom:10px">
-      <div class="input-group"><label class="label">開始時間</label><input class="input" type="time" id="sch-start" value="${e?(item.timeStart||''):(defStart||'')}" style="margin-bottom:0"></div>
-      <div class="input-group"><label class="label">結束時間</label><input class="input" type="time" id="sch-end" value="${e?(item.timeEnd||''):(defEnd||'')}" style="margin-bottom:0"></div>
+      <div class="input-group">
+        <label class="label">開始時間</label>
+        <input class="input" type="time" id="sch-start" value="${e ? (item.timeStart || '') : (defStart || '')}" style="margin-bottom:0">
+      </div>
+      <div class="input-group">
+        <label class="label">結束時間</label>
+        <input class="input" type="time" id="sch-end" value="${e ? (item.timeEnd || '') : (defEnd || '')}" style="margin-bottom:0">
+      </div>
     </div>
-    <label class="label">地點</label><input class="input" type="text" id="sch-loc" placeholder="例：體育館A場" value="${e?(item.location||''):''}">
-    <label class="label">備註（選填）</label><input class="input" type="text" id="sch-note" placeholder="例：重點練習殺球" value="${e?(item.note||''):''}">
+    <label class="label">地點</label>
+    <input class="input" type="text" id="sch-loc" placeholder="例：體育館A場、社區球場" value="${e ? (item.location || '') : ''}">
+    <label class="label">備註（選填）</label>
+    <input class="input" type="text" id="sch-note" placeholder="例：重點練習殺球" value="${e ? (item.note || '') : ''}">
     <div class="modal-btn-row">
       <button class="btn" onclick="closeScheduleModal()">取消</button>
-      <button class="btn btn-primary" onclick="${e?`saveEditSchedule('${item.id}')`:'saveAddSchedule()'}">儲存</button>
+      <button class="btn btn-primary" onclick="${e ? `saveEditSchedule('${item.id}')` : 'saveAddSchedule()'}">儲存</button>
     </div>`;
 }
+
 function openAddSchedule(presetSid) {
   document.getElementById('modal-title').textContent = '新增排課';
-  const nh=nowTime(), eh=(()=>{const[h,m]=nh.split(':').map(Number);return String((h+2)%24).padStart(2,'0')+':'+String(m).padStart(2,'0');})();
+  const nh = nowTimeRounded();
+  const eh = addHoursToRounded(nh, 2);
   document.getElementById('modal-body').innerHTML = scheduleFormHtml(null, presetSid, nh, eh);
   document.getElementById('schedule-modal').classList.add('open');
 }
+
 function openEditSchedule(id) {
-  const item=state.schedule.find(x=>x.id===id); if(!item)return;
-  document.getElementById('modal-title').textContent='編輯排課';
-  document.getElementById('modal-body').innerHTML=scheduleFormHtml(item);
+  const item = state.schedule.find(x => x.id === id);
+  if (!item) return;
+  document.getElementById('modal-title').textContent = '編輯排課';
+  document.getElementById('modal-body').innerHTML = scheduleFormHtml(item);
   document.getElementById('schedule-modal').classList.add('open');
 }
+
 function closeScheduleModal() { document.getElementById('schedule-modal').classList.remove('open'); }
-function onModalBgClick(e) { if(e.target===document.getElementById('schedule-modal'))closeScheduleModal(); }
+function onModalBgClick(e)    { if (e.target === document.getElementById('schedule-modal')) closeScheduleModal(); }
+
 function saveAddSchedule() {
-  const sid=parseInt(document.getElementById('sch-student').value);
-  const stu=state.students.find(s=>s.id===sid);
-  const date=document.getElementById('sch-date').value||state.scheduleDate;
-  state.schedule.push({id:String(Date.now()),studentId:sid,studentName:stu?stu.name:'未知',
-    date,timeStart:document.getElementById('sch-start').value,timeEnd:document.getElementById('sch-end').value,
-    location:document.getElementById('sch-loc').value.trim(),note:document.getElementById('sch-note').value.trim()});
-  saveSchedule(); state.scheduleDate=date; closeScheduleModal(); render(); showToast('✅ 排課已新增');
-}
-function saveEditSchedule(id) {
-  const item=state.schedule.find(x=>x.id===id); if(!item)return;
-  const sid=parseInt(document.getElementById('sch-student').value);
-  const stu=state.students.find(s=>s.id===sid);
-  Object.assign(item,{studentId:sid,studentName:stu?stu.name:item.studentName,
-    date:document.getElementById('sch-date').value||item.date,
-    timeStart:document.getElementById('sch-start').value,timeEnd:document.getElementById('sch-end').value,
-    location:document.getElementById('sch-loc').value.trim(),note:document.getElementById('sch-note').value.trim()});
-  saveSchedule(); state.scheduleDate=item.date; closeScheduleModal(); render(); showToast('✅ 排課已更新');
-}
-function deleteScheduleItem(id) {
-  if(!confirm('確定要刪除此排課？'))return;
-  state.schedule=state.schedule.filter(x=>x.id!==id);
-  saveSchedule(); render(); showToast('🗑 排課已刪除');
+  const sid  = parseInt(document.getElementById('sch-student').value);
+  const stu  = state.students.find(s => s.id === sid);
+  const date = document.getElementById('sch-date').value || state.scheduleDate;
+  state.schedule.push({
+    id: String(Date.now()), studentId: sid, studentName: stu ? stu.name : '未知',
+    date,
+    timeStart: document.getElementById('sch-start').value,
+    timeEnd:   document.getElementById('sch-end').value,
+    location:  document.getElementById('sch-loc').value.trim(),
+    note:      document.getElementById('sch-note').value.trim()
+  });
+  saveSchedule();
+  state.scheduleDate  = date;
+  state.scheduleMonth = date.slice(0, 7);
+  closeScheduleModal();
+  render();
+  showToast('✅ 排課已新增・點📅可加入 Google 日曆');
 }
 
-// ════ 記錄上課 ════
+function saveEditSchedule(id) {
+  const item = state.schedule.find(x => x.id === id);
+  if (!item) return;
+  const sid = parseInt(document.getElementById('sch-student').value);
+  const stu = state.students.find(s => s.id === sid);
+  Object.assign(item, {
+    studentId: sid, studentName: stu ? stu.name : item.studentName,
+    date:      document.getElementById('sch-date').value || item.date,
+    timeStart: document.getElementById('sch-start').value,
+    timeEnd:   document.getElementById('sch-end').value,
+    location:  document.getElementById('sch-loc').value.trim(),
+    note:      document.getElementById('sch-note').value.trim()
+  });
+  saveSchedule();
+  state.scheduleDate  = item.date;
+  state.scheduleMonth = item.date.slice(0, 7);
+  closeScheduleModal();
+  render();
+  showToast('✅ 排課已更新');
+}
+
+function deleteScheduleItem(id) {
+  if (!confirm('確定要刪除此排課？')) return;
+  state.schedule = state.schedule.filter(x => x.id !== id);
+  saveSchedule();
+  render();
+  showToast('🗑 排課已刪除');
+}
+
+// ★ Google 日曆連動（URL Scheme，不需 API）
+function getGoogleCalUrl(item) {
+  const ds    = item.date.replace(/-/g, '');
+  const start = (item.timeStart || '09:00').replace(':', '') + '00';
+  const end   = (item.timeEnd   || '11:00').replace(':', '') + '00';
+  const text  = encodeURIComponent('羽球課 - ' + item.studentName);
+  const loc   = encodeURIComponent(item.location || '');
+  const det   = encodeURIComponent(item.note || '');
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${ds}T${start}/${ds}T${end}&location=${loc}&details=${det}`;
+}
+
+function openGoogleCal(id) {
+  const item = state.schedule.find(x => x.id === id);
+  if (!item) return;
+  window.open(getGoogleCalUrl(item), '_blank', 'noopener');
+}
+
+// ══════════════════════════════════════════
+//  記錄上課（★ 欄位互換 + 整點預設）
+// ══════════════════════════════════════════
 function renderRecord(c) {
-  const cur=nowTime(), end=(()=>{const[h,m]=cur.split(':').map(Number);return String((h+2)%24).padStart(2,'0')+':'+String(m).padStart(2,'0');})();
+  const nh = nowTimeRounded();
+  const eh = addHoursToRounded(nh, 2);
   c.innerHTML = `
     <div class="card">
       <div class="section-label">記錄上課</div>
       <label class="label">選擇學生</label>
-      <select class="input" id="rec-student">${state.students.map(s=>`<option value="${s.id}">${s.name}（剩 ${getRemaining(s)} 堂）</option>`).join('')}</select>
-      <label class="label">上課日期</label><input class="input" type="date" id="rec-date" value="${today()}">
-      <div class="input-row-3">
-        <div class="input-group"><label class="label">開始時間</label><input class="input" type="time" id="rec-time-start" value="${cur}"></div>
-        <div class="input-group"><label class="label">結束時間</label><input class="input" type="time" id="rec-time-end" value="${end}"></div>
-        <div class="input-group"><label class="label">地點</label><input class="input" type="text" id="rec-location" placeholder="例：體育館A場"></div>
+      <select class="input" id="rec-student">
+        ${state.students.map(s => `<option value="${s.id}">${s.name}（剩 ${getRemaining(s)} 堂）</option>`).join('')}
+      </select>
+      <label class="label">上課日期</label>
+      <input class="input" type="date" id="rec-date" value="${today()}">
+
+      <!-- ★ 開始時間 | 結束時間 | 堂數（窄欄）一列 -->
+      <div class="input-row-t">
+        <div class="input-group">
+          <label class="label">開始時間</label>
+          <input class="input" type="time" id="rec-time-start" value="${nh}" style="margin-bottom:0">
+        </div>
+        <div class="input-group">
+          <label class="label">結束時間</label>
+          <input class="input" type="time" id="rec-time-end" value="${eh}" style="margin-bottom:0">
+        </div>
+        <div class="input-group">
+          <label class="label" style="text-align:center">堂數</label>
+          <input class="input-count" type="number" id="rec-count" value="1" min="1" max="9">
+        </div>
       </div>
-      <label class="label">堂數（消耗）</label><input class="input" type="number" id="rec-count" value="1" min="1">
-      <button class="btn btn-primary" onclick="doRecord()">確認記錄</button>
+
+      <!-- ★ 地點：獨立一行，欄位較寬 -->
+      <label class="label">上課地點</label>
+      <input class="input" type="text" id="rec-location" placeholder="例：體育館A場、社區球場、自家球場...">
+
+      <button class="btn btn-primary" style="margin-top:2px" onclick="doRecord()">✅ 確認記錄上課</button>
     </div>
+
     <div class="card">
       <div class="section-label">新增購課</div>
       <label class="label">選擇學生</label>
-      <select class="input" id="buy-student">${state.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select>
+      <select class="input" id="buy-student">
+        ${state.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+      </select>
+
       <div class="input-row" style="margin-bottom:10px">
-        <div class="input-group"><label class="label">購課日期</label><input class="input" type="date" id="buy-date" value="${today()}"></div>
-        <div class="input-group"><label class="label">備註（選填）</label><input class="input" type="text" id="buy-location" placeholder="例：LINE 匯款"></div>
+        <div class="input-group">
+          <label class="label">購課日期</label>
+          <input class="input" type="date" id="buy-date" value="${today()}" style="margin-bottom:0">
+        </div>
+        <!-- ★ 尖峰/離峰 -->
+        <div class="input-group">
+          <label class="label">尖峰 / 離峰</label>
+          <select class="input" id="buy-peak" style="margin-bottom:0">
+            <option value="">未指定</option>
+            <option value="尖峰">🔴 尖峰</option>
+            <option value="離峰">🟢 離峰</option>
+          </select>
+        </div>
       </div>
-      <label class="label">購買堂數</label><input class="input" type="number" id="buy-count" value="10" min="1">
-      <button class="btn" onclick="doPurchase()">新增購課</button>
+
+      <label class="label">購買堂數</label>
+      <input class="input" type="number" id="buy-count" value="10" min="1">
+      <label class="label">備註（選填，例：LINE 匯款）</label>
+      <input class="input" type="text" id="buy-note" placeholder="例：LINE 匯款・現金">
+      <button class="btn btn-primary" onclick="doPurchase()">✅ 確認新增購課</button>
     </div>`;
 }
 
-// ════ 設定 ════
+// ══════════════════════════════════════════
+//  設定（★ 移除手動同步按鈕 + Excel 備份）
+// ══════════════════════════════════════════
 function renderSettings(c) {
   const antKey = getCfg(SK_ANT_KEY), nToken = getCfg(SK_NOTION_TOK), nDbId = getCfg(SK_NOTION_DB);
-  const mask = v => v ? v.slice(0,8)+'••••••••••••••••••••' : '';
+  const mask = v => v ? v.slice(0, 8) + '••••••••••••••••••••' : '';
   c.innerHTML = `
     <div class="cfg-card">
       <div class="cfg-title">✨ AI 筆記功能 — Anthropic API Key</div>
@@ -566,7 +864,7 @@ function renderSettings(c) {
       <label class="label">Anthropic API Key</label>
       <input class="input" type="password" id="ant-key-input" placeholder="sk-ant-api03-..." value="${mask(antKey)}" style="letter-spacing:1px">
       <button class="btn btn-primary" onclick="saveAntKey()">儲存 API Key</button>
-      <div class="${antKey?'status-ok':'status-no'}">${antKey?'✅ 已設定，AI 功能啟用中':'⚠️ 尚未設定，AI 功能停用中'}</div>
+      <div class="${antKey ? 'status-ok' : 'status-no'}">${antKey ? '✅ 已設定，AI 功能啟用中' : '⚠️ 尚未設定，AI 功能停用中'}</div>
     </div>
 
     <div class="cfg-card">
@@ -574,14 +872,15 @@ function renderSettings(c) {
       <div class="cfg-desc">
         <strong>Token：</strong>notion.so → Settings → Connections → 建立 Internal Integration → 複製 Secret。<br>
         <strong>資料庫 ID：</strong>打開資料庫，URL 中 notion.so/ 後面那段 32 碼英數字。<br>
-        <strong>⚠️ 別忘了：</strong>資料庫右上角 ⋯ → Connections → 加入你的 Integration
+        <strong>⚠️ 別忘了：</strong>資料庫右上角 ⋯ → Connections → 加入你的 Integration<br>
+        <strong>💡 自動同步：</strong>記錄上課或購課後，系統將自動同步至 Notion，不需手動操作。
       </div>
       <label class="label">Notion Integration Token</label>
       <input class="input" type="password" id="notion-tok-input" placeholder="ntn_xxx 或 secret_xxx" value="${mask(nToken)}" style="letter-spacing:1px">
       <label class="label">Notion 資料庫 ID（32 碼）</label>
       <input class="input" type="text" id="notion-db-input" placeholder="例：abc123def456..." value="${nDbId}">
       <button class="btn btn-notion" onclick="saveNotionCfg()">💾 儲存 Notion 設定</button>
-      <div class="${(nToken&&nDbId)?'status-ok':'status-no'}">${(nToken&&nDbId)?'✅ 已設定完成':'⚠️ 尚未設定'}</div>
+      <div class="${(nToken && nDbId) ? 'status-ok' : 'status-no'}">${(nToken && nDbId) ? '✅ 已設定完成，儲存時自動同步' : '⚠️ 尚未設定'}</div>
     </div>
 
     <div class="card" style="border:2px solid #185FA5">
@@ -594,44 +893,96 @@ function renderSettings(c) {
     </div>
 
     <div class="card">
-      <div class="section-label">Notion 同步</div>
-      <button class="btn btn-sync" onclick="syncAllNotion()" id="sync-all-btn" ${!(nToken&&nDbId)?'disabled':''}>🔄 同步所有學生到 Notion</button>
+      <div class="section-label">Notion 批次同步</div>
+      <p style="font-size:12px;color:#8e8e93;margin-bottom:10px;line-height:1.6">
+        上課/購課後系統自動同步。此按鈕可手動補同步全部學生。
+      </p>
+      <button class="btn btn-sync" onclick="syncAllNotion()" id="sync-all-btn" ${!(nToken && nDbId) ? 'disabled' : ''}>🔄 同步所有學生到 Notion</button>
       <div id="sync-progress" style="display:none">
         <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
         <div id="progress-text" style="font-size:12px;color:#8e8e93;margin-top:6px;text-align:center"></div>
       </div>
     </div>
 
+    <!-- ★ Excel 備份 -->
+    <div class="card">
+      <div class="section-label">📊 Excel 備份</div>
+      <p style="font-size:12px;color:#8e8e93;margin-bottom:10px;line-height:1.6">
+        將所有學生的上課與購課紀錄匯出為 CSV 格式，可直接用 Excel 開啟。
+      </p>
+      <button class="btn btn-export" onclick="exportExcel()">📥 一鍵匯出 Excel 備份</button>
+    </div>
+
     <div class="card">
       <div class="section-label">同步紀錄</div>
-      ${state.syncLog.length===0 ? '<div style="font-size:13px;color:#8e8e93">尚無同步紀錄</div>'
-        : state.syncLog.slice(0,15).map(l=>`
+      ${state.syncLog.length === 0 ? '<div style="font-size:13px;color:#8e8e93">尚無同步紀錄</div>'
+        : state.syncLog.slice(0, 15).map(l => `
           <div style="padding:6px 0;border-bottom:1px solid #f2f2f7;font-size:12px">
-            <span style="color:${l.ok?'#3B6D11':'#A32D2D'}">${l.ok?'✅':'❌'}</span>
+            <span style="color:${l.ok ? '#3B6D11' : '#A32D2D'}">${l.ok ? '✅' : '❌'}</span>
             <span style="margin:0 6px;color:#1c1c1e">${l.name}</span>
             <span style="color:#8e8e93">${l.time}</span>
-            ${l.msg?`<div style="color:#A32D2D;font-size:11px;margin-top:2px">${l.msg}</div>`:''}
+            ${l.msg ? `<div style="color:#A32D2D;font-size:11px;margin-top:2px">${l.msg}</div>` : ''}
           </div>`).join('')}
     </div>
 
     <div class="card">
       <div class="section-label">Notion 資料庫欄位說明</div>
       <p style="font-size:12px;color:#636366;line-height:1.9">
-        需要建立欄位：<strong>姓名</strong>（Title）・<strong>剩餘堂數</strong>（Number）・<strong>已上堂數</strong>（Number）・<strong>購買堂數</strong>（Number）・<strong>最後同步</strong>（Text）
+        需要建立欄位：<strong>姓名</strong>（Title）・<strong>剩餘堂數</strong>（Number）・<strong>已上堂數</strong>（Number）・<strong>購買堂數</strong>（Number）・<strong>最後同步</strong>（Text）・<strong>備註</strong>（Text，選用）<br>
+        若欄位缺少，系統會自動跳過，不影響已有欄位的同步。
       </p>
     </div>`;
 }
 
-// ════ 診斷 ════
+// ══════════════════════════════════════════
+//  ★ Excel 備份匯出
+// ══════════════════════════════════════════
+function exportExcel() {
+  const header = ['學生姓名', '日期', '類型', '開始時間', '結束時間', '地點', '堂數變動', '尖峰離峰', '備註'];
+  const rows   = [header];
+
+  const sorted = [...state.students].sort((a, b) => a.name.localeCompare(b.name, 'zh-TW'));
+  sorted.forEach(s => {
+    const logsAsc = [...s.logs].reverse();
+    logsAsc.forEach(l => {
+      rows.push([
+        s.name,
+        l.date,
+        l.type,
+        l.timeStart  || '',
+        l.timeEnd    || '',
+        l.location   || '',
+        l.delta > 0 ? '+' + l.delta : String(l.delta),
+        l.peakType   || '',
+        l.type === '購課' ? (l.note || '') : ''
+      ]);
+    });
+  });
+
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `羽球教練備份_${today()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  showToast('✅ Excel 備份已匯出');
+}
+
+// ══════════════════════════════════════════
+//  Notion 診斷
+// ══════════════════════════════════════════
 async function runDiagnostic() {
   const btn = document.getElementById('diag-btn');
   const result = document.getElementById('diag-result');
   btn.disabled = true; btn.textContent = '⏳ 診斷中...';
   const token = getCfg(SK_NOTION_TOK), dbId = getCfg(SK_NOTION_DB);
   const steps = [];
-
-  steps.push({ ok: !!token, label: 'Token 已填入', detail: token ? `已填入（${token.slice(0,8)}...）` : '請先填入 Token' });
-  steps.push({ ok: !!dbId,  label: '資料庫 ID 已填入', detail: dbId ? `已填入（${dbId.slice(0,8)}...）` : '請先填入資料庫 ID' });
+  steps.push({ ok: !!token, label: 'Token 已填入', detail: token ? `已填入（${token.slice(0, 8)}...）` : '請先填入 Token' });
+  steps.push({ ok: !!dbId,  label: '資料庫 ID 已填入', detail: dbId ? `已填入（${dbId.slice(0, 8)}...）` : '請先填入資料庫 ID' });
 
   if (!token || !dbId) {
     renderDiagResult(steps, '❌ 請先填入設定再診斷');
@@ -639,25 +990,19 @@ async function runDiagnostic() {
     return;
   }
 
-  // 測試 API Route 是否可用
   result.innerHTML = `<div class="diag-box diag-ing">⏳ 測試伺服器 API...</div>`;
   let apiOk = false;
   try {
-    const testRes = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: '/v1/users/me', method: 'GET', token }),
-    });
+    const testRes  = await fetch(API_BASE, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: '/v1/users/me', method: 'GET', token }) });
     const testData = await testRes.json();
     if (testRes.status === 200) {
       apiOk = true;
       steps.push({ ok: true,  label: '伺服器 API 可用', detail: '✅ Vercel API Route 正常運作（無 CORS 問題）' });
-      steps.push({ ok: true,  label: 'Token 有效', detail: `✅ 驗證成功` });
+      steps.push({ ok: true,  label: 'Token 有效', detail: '✅ 驗證成功' });
     } else if (testRes.status === 401) {
       steps.push({ ok: true,  label: '伺服器 API 可用', detail: '✅ Vercel API Route 正常運作' });
       steps.push({ ok: false, label: 'Token 有效', detail: '❌ Token 無效（401），請重新複製 Integration 的 Secret' });
     } else if (testRes.status === 404 && testData.error) {
-      // API route 本身找不到（本地開發沒有 /api/notion）
       steps.push({ ok: false, label: '伺服器 API 可用', detail: '❌ 找不到 /api/notion。請確認：1) 已上傳 api/notion.js 到 GitHub 2) Vercel 已重新部署' });
       steps.push({ ok: false, label: 'Token 有效', detail: '⏭ 跳過（API 不可用）' });
     } else {
@@ -665,34 +1010,29 @@ async function runDiagnostic() {
       steps.push({ ok: false, label: 'Token 有效', detail: '⏭ 跳過' });
     }
   } catch(e) {
-    steps.push({ ok: false, label: '伺服器 API 可用', detail: '❌ 無法連到 /api/notion：' + e.message + '。請確認已上傳 api/notion.js' });
+    steps.push({ ok: false, label: '伺服器 API 可用', detail: '❌ 無法連到 /api/notion：' + e.message });
     steps.push({ ok: false, label: 'Token 有效', detail: '⏭ 跳過' });
   }
 
-  // 測試資料庫
   if (apiOk) {
     result.innerHTML = `<div class="diag-box diag-ing">⏳ 測試資料庫 ID...</div>`;
     try {
-      const dbRes = await fetch(API_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: '/v1/databases/' + formatDbId(dbId), method: 'GET', token }),
-      });
+      const dbRes  = await fetch(API_BASE, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: '/v1/databases/' + formatDbId(dbId), method: 'GET', token }) });
       const dbData = await dbRes.json();
       if (dbRes.status === 200) {
         steps.push({ ok: true, label: '資料庫 ID 有效', detail: `✅ 找到資料庫：「${dbData.title?.[0]?.plain_text || '（無標題）'}」` });
-        const props = Object.keys(dbData.properties || {});
+        const props    = Object.keys(dbData.properties || {});
         const required = ['姓名', '剩餘堂數', '已上堂數', '購買堂數', '最後同步'];
-        const missing = required.filter(f => !props.includes(f));
+        const missing  = required.filter(f => !props.includes(f));
         steps.push(missing.length === 0
           ? { ok: true,  label: '資料庫欄位', detail: '✅ 所有必要欄位都存在' }
-          : { ok: false, label: '資料庫欄位', detail: `⚠️ 缺少欄位：${missing.join('、')}` });
+          : { ok: false, label: '資料庫欄位', detail: `⚠️ 缺少欄位：${missing.join('、')}（缺少的欄位會被自動跳過）` });
       } else if (dbRes.status === 404) {
         steps.push({ ok: false, label: '資料庫 ID 有效', detail: '❌ 找不到（404）。最常見原因：Integration 還沒加進資料庫 Connection！' });
       } else if (dbRes.status === 403) {
         steps.push({ ok: false, label: '資料庫 ID 有效', detail: '❌ 無存取權（403）。請到資料庫 ⋯ → Connections → 加入 Integration' });
       } else {
-        steps.push({ ok: false, label: '資料庫 ID 有效', detail: `❌ HTTP ${dbRes.status}：${dbData.message||'未知'}` });
+        steps.push({ ok: false, label: '資料庫 ID 有效', detail: `❌ HTTP ${dbRes.status}：${dbData.message || '未知'}` });
       }
     } catch(e) {
       steps.push({ ok: false, label: '資料庫 ID 有效', detail: '❌ ' + e.message });
@@ -707,134 +1047,183 @@ async function runDiagnostic() {
 function renderDiagResult(steps, summary) {
   const allOk = steps.every(s => s.ok);
   document.getElementById('diag-result').innerHTML = `
-    <div class="diag-box ${allOk?'diag-ok':'diag-err'}" style="margin-bottom:8px"><strong>${summary}</strong></div>
-    ${steps.map(s=>`<div class="diag-step"><div class="diag-icon">${s.ok?'✅':'❌'}</div>
+    <div class="diag-box ${allOk ? 'diag-ok' : 'diag-err'}" style="margin-bottom:8px"><strong>${summary}</strong></div>
+    ${steps.map(s => `<div class="diag-step"><div class="diag-icon">${s.ok ? '✅' : '❌'}</div>
       <div class="diag-text"><strong>${s.label}</strong><br><span style="color:#636366">${s.detail}</span></div></div>`).join('')}
-    ${!allOk?`<div class="diag-box diag-warn" style="margin-top:10px;font-size:12px">
+    ${!allOk ? `<div class="diag-box diag-warn" style="margin-top:10px;font-size:12px">
       <strong>💡 最常見問題：Integration 沒加進資料庫</strong><br>
       Notion 資料庫頁面 → 右上角 <strong>⋯</strong> → <strong>Connections</strong> → 找到你的 Integration → <strong>Confirm</strong>
-    </div>`:''}`;
+    </div>` : ''}`;
 }
 
-// ════ Notion 同步 ════
+// ══════════════════════════════════════════
+//  Notion 同步邏輯（★ 優化：只更新存在的欄位）
+// ══════════════════════════════════════════
 async function findOrCreateNotionPage(student) {
   const dbId = formatDbId(getCfg(SK_NOTION_DB));
-  const map = loadNotionMap();
+  const map  = loadNotionMap();
   if (map[student.id]) return map[student.id];
-  const data = await notionRequest('/v1/databases/'+dbId+'/query', 'POST', {filter:{property:'姓名',title:{equals:student.name}}});
+
+  const data = await notionRequest('/v1/databases/' + dbId + '/query', 'POST',
+    { filter: { property: '姓名', title: { equals: student.name } } });
   let pageId;
   if (data.results?.length > 0) {
     pageId = data.results[0].id;
   } else {
-    const c = await notionRequest('/v1/pages', 'POST', {parent:{database_id:dbId},properties:{姓名:{title:[{text:{content:student.name}}]}}});
+    const c = await notionRequest('/v1/pages', 'POST', {
+      parent: { database_id: dbId },
+      properties: { 姓名: { title: [{ text: { content: student.name } }] } }
+    });
     pageId = c.id;
   }
-  map[student.id] = pageId; saveNotionMap(map);
+  map[student.id] = pageId;
+  saveNotionMap(map);
   return pageId;
 }
+
 async function updateNotionPage(student, pageId) {
   const rem = getRemaining(student);
-  const ts = new Date().toISOString().slice(0,10)+' '+new Date().toTimeString().slice(0,5);
-  await notionRequest('/v1/pages/'+pageId, 'PATCH', {properties:{
-    '剩餘堂數':{number:rem}, '已上堂數':{number:student.used},
-    '購買堂數':{number:student.totalBought}, '最後同步':{rich_text:[{text:{content:ts}}]}
-  }});
+  const ts  = new Date().toISOString().slice(0, 10) + ' ' + new Date().toTimeString().slice(0, 5);
+
+  // 先讀取頁面，只更新存在的欄位（防呆：缺欄位不報錯）
+  const allUpdates = {
+    '剩餘堂數': { number: rem },
+    '已上堂數': { number: student.used },
+    '購買堂數': { number: student.totalBought },
+    '最後同步': { rich_text: [{ text: { content: ts } }] },
+    '備註':     { rich_text: [{ text: { content: student.memo || '' } }] },
+  };
+
+  let existingProps = null;
+  try {
+    const page   = await notionRequest('/v1/pages/' + pageId, 'GET');
+    existingProps = Object.keys(page.properties || {});
+  } catch(e) { /* 無法讀取頁面屬性，直接嘗試全部更新 */ }
+
+  const updates = existingProps
+    ? Object.fromEntries(Object.entries(allUpdates).filter(([k]) => existingProps.includes(k)))
+    : allUpdates;
+
+  if (Object.keys(updates).length > 0) {
+    await notionRequest('/v1/pages/' + pageId, 'PATCH', { properties: updates });
+  }
 }
+
 function addSyncLog(name, ok, msg) {
-  state.syncLog.unshift({name, ok, msg, time: new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})});
+  state.syncLog.unshift({ name, ok, msg: msg || '', time: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }) });
 }
-function setSyncStatus(elId, msg, type) {
-  const el = document.getElementById(elId);
-  if (el) el.innerHTML = `<div class="sync-status sync-${type}">${msg}</div>`;
-}
-async function syncOneNotion(sid) {
-  const s = state.students.find(x=>x.id===sid);
-  setSyncStatus('sync-status-'+sid, '⏳ 同步中...', 'ing');
+
+// ★ 靜默自動同步（上課/購課後在後台執行，不打擾教練）
+async function autoSyncNotion(sid) {
+  if (!getCfg(SK_NOTION_TOK) || !getCfg(SK_NOTION_DB)) return;
+  const s = state.students.find(x => x.id === sid);
+  if (!s) return;
+
+  // 頂部顯示小提示
+  const syncEl = document.getElementById('header-sync');
+  if (syncEl) { syncEl.style.display = 'block'; syncEl.textContent = '⏳ 同步中'; }
+
   try {
     const pageId = await findOrCreateNotionPage(s);
     await updateNotionPage(s, pageId);
     addSyncLog(s.name, true);
-    setSyncStatus('sync-status-'+sid, '✅ 已同步到 Notion', 'ok');
-    showToast('✅ Notion 同步成功');
+    if (syncEl) { syncEl.textContent = '✅ 已同步'; setTimeout(() => { syncEl.style.display = 'none'; }, 3000); }
   } catch(e) {
     addSyncLog(s.name, false, e.message);
-    setSyncStatus('sync-status-'+sid, '❌ '+e.message, 'err');
-    showToast('❌ 同步失敗：'+e.message);
+    if (syncEl) syncEl.style.display = 'none';
+    // 靜默失敗，不跳 alert 打擾教練
   }
-}
-async function syncAllNotion() {
-  const prog = document.getElementById('sync-progress');
-  const btn = document.getElementById('sync-all-btn');
-  if (prog) prog.style.display = 'block';
-  if (btn) btn.disabled = true;
-  for (let i = 0; i < state.students.length; i++) {
-    const s = state.students[i];
-    const fill=document.getElementById('progress-fill'), txt=document.getElementById('progress-text');
-    if(fill) fill.style.width=Math.round((i+1)/state.students.length*100)+'%';
-    if(txt) txt.textContent=`同步 ${s.name}... (${i+1}/${state.students.length})`;
-    try { await updateNotionPage(s, await findOrCreateNotionPage(s)); addSyncLog(s.name,true); }
-    catch(e) { addSyncLog(s.name,false,e.message); }
-  }
-  if (prog) prog.style.display = 'none';
-  if (btn) btn.disabled = false;
-  render(); showToast('✅ Notion 全部同步完成');
 }
 
-// ════ AI 筆記 ════
+async function syncAllNotion() {
+  const prog = document.getElementById('sync-progress');
+  const btn  = document.getElementById('sync-all-btn');
+  if (prog) prog.style.display = 'block';
+  if (btn)  btn.disabled = true;
+  for (let i = 0; i < state.students.length; i++) {
+    const s    = state.students[i];
+    const fill = document.getElementById('progress-fill');
+    const txt  = document.getElementById('progress-text');
+    if (fill) fill.style.width = Math.round((i + 1) / state.students.length * 100) + '%';
+    if (txt)  txt.textContent  = `同步 ${s.name}... (${i + 1}/${state.students.length})`;
+    try { await updateNotionPage(s, await findOrCreateNotionPage(s)); addSyncLog(s.name, true); }
+    catch(e) { addSyncLog(s.name, false, e.message); }
+  }
+  if (prog) prog.style.display = 'none';
+  if (btn)  btn.disabled = false;
+  render();
+  showToast('✅ Notion 全部同步完成');
+}
+
+// ══════════════════════════════════════════
+//  AI 筆記
+// ══════════════════════════════════════════
 async function generateNote(sid) {
-  const s = state.students.find(x=>x.id===sid);
-  const input = document.getElementById('note-input-'+sid), btn = document.getElementById('ai-btn-'+sid);
+  const s     = state.students.find(x => x.id === sid);
+  const input = document.getElementById('note-input-' + sid);
+  const btn   = document.getElementById('ai-btn-' + sid);
   if (!input.value.trim()) { alert('請先輸入今天的上課狀況'); return; }
   const antKey = getCfg(SK_ANT_KEY);
   if (!antKey) { alert('請先到「設定」分頁填入 Anthropic API Key'); return; }
   btn.textContent = '⏳ AI 整理中...'; btn.disabled = true;
-  const prev = s.notes.slice(0,2).map(n=>n.text).join('\n');
+  const prev = s.notes.slice(0, 2).map(n => n.text).join('\n');
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type':'application/json', 'x-api-key':antKey, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': antKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514', max_tokens: 300,
-        messages: [{ role:'user', content:'你是羽球教練助理。根據教練的口語描述，整理成簡短學習筆記（100字以內），格式：優點・待改進・下次重點。\n教練描述：'+input.value.trim()+'\n過去筆記：'+(prev||'無')+'\n只輸出筆記內容，不要加前言。' }]
+        messages: [{ role: 'user', content: '你是羽球教練助理。根據教練的口語描述，整理成簡短學習筆記（100字以內），格式：優點・待改進・下次重點。\n教練描述：' + input.value.trim() + '\n過去筆記：' + (prev || '無') + '\n只輸出筆記內容，不要加前言。' }]
       })
     });
-    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || 'HTTP '+res.status); }
+    if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error?.message || 'HTTP ' + res.status); }
     const data = await res.json();
-    s.notes.unshift({ date:today(), text:data.content?.[0]?.text||'整理失敗', ai:true });
-    input.value = ''; saveStudents(); showToast('✅ AI 筆記整理完成');
-  } catch(e) { alert('AI 連線失敗：'+e.message); }
+    s.notes.unshift({ date: today(), text: data.content?.[0]?.text || '整理失敗', ai: true });
+    input.value = '';
+    saveStudents(true);
+    showToast('✅ AI 筆記整理完成');
+  } catch(e) { alert('AI 連線失敗：' + e.message); }
   btn.textContent = '✨ AI 整理筆記'; btn.disabled = false; render();
 }
 
-// ════ 匯出 PDF ════
+// ══════════════════════════════════════════
+//  匯出 PDF（給學生）
+// ══════════════════════════════════════════
 function exportPrint(sid) {
-  const s = state.students.find(x=>x.id===sid), rem = getRemaining(s);
+  const s = state.students.find(x => x.id === sid), rem = getRemaining(s);
   let balance = 0;
-  const rows = [...s.logs].reverse().map(l=>{ balance+=l.delta; return {...l,balance}; }).reverse();
-  const warn = rem<=2 ? `<div style="background:#FCEBEB;color:#A32D2D;border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:13px;font-weight:600;">⚠️ 課堂即將用完，請盡快購課</div>` : '';
+  const rows = [...s.logs].reverse().map(l => { balance += l.delta; return { ...l, balance }; }).reverse();
+  const warn = rem <= 2 ? `<div style="background:#FCEBEB;color:#A32D2D;border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:13px;font-weight:600;">⚠️ 課堂即將用完，請盡快購課</div>` : '';
   const html = `<!DOCTYPE html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${s.name} 課堂紀錄</title>
   <style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:720px;margin:40px auto;padding:0 24px;color:#1c1c1e}h1{font-size:24px;font-weight:700;margin-bottom:4px}.sub{color:#8e8e93;font-size:13px;margin-bottom:28px}.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}.metric{background:#f2f2f7;border-radius:10px;padding:14px;text-align:center}.metric-num{font-size:28px;font-weight:700}.metric-lbl{font-size:11px;color:#8e8e93;margin-top:4px}.rem-ok{color:#3B6D11}.rem-low{color:#A32D2D}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}th{background:#185FA5;color:#fff;padding:9px 10px;text-align:left;font-weight:600}td{padding:9px 10px;border-bottom:1px solid #f2f2f7}tr:nth-child(even) td{background:#f9f9f9}.plus{color:#3B6D11;font-weight:600}.minus{color:#A32D2D;font-weight:600}.footer{margin-top:36px;color:#c7c7cc;font-size:11px;text-align:center;border-top:1px solid #f2f2f7;padding-top:16px}.print-btn{display:block;margin:0 auto 24px;padding:10px 28px;background:#185FA5;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer;font-weight:600}@media print{.print-btn{display:none}body{margin:20px auto}}</style></head><body>
   <button class="print-btn" onclick="window.print()">🖨️ 列印 / 存成 PDF</button>
   <h1>${s.name} 課堂紀錄</h1><div class="sub">製表日期：${today()}</div>
-  <div class="metrics"><div class="metric"><div class="metric-num">${s.totalBought}</div><div class="metric-lbl">購買課堂</div></div><div class="metric"><div class="metric-num">${s.used}</div><div class="metric-lbl">已上課堂</div></div><div class="metric"><div class="metric-num ${rem<=2?'rem-low':'rem-ok'}">${rem}</div><div class="metric-lbl">剩餘課堂</div></div></div>${warn}
-  <table><thead><tr><th>#</th><th>姓名</th><th>日期</th><th>開始</th><th>結束</th><th>地點</th><th>消耗</th><th>剩餘</th></tr></thead>
-  <tbody>${rows.map((l,i)=>`<tr><td>${l.type==='上課'?(i+1):''}</td><td>${s.name}</td><td>${l.date}</td><td>${l.timeStart||'—'}</td><td>${l.timeEnd||'—'}</td><td>${l.location||(l.type==='購課'?'購課':'—')}</td><td class="${l.delta>0?'plus':'minus'}">${l.delta>0?'+':''}${l.delta}</td><td>${l.balance}</td></tr>`).join('')}</tbody></table>
+  <div class="metrics"><div class="metric"><div class="metric-num">${s.totalBought}</div><div class="metric-lbl">購買課堂</div></div><div class="metric"><div class="metric-num">${s.used}</div><div class="metric-lbl">已上課堂</div></div><div class="metric"><div class="metric-num ${rem <= 2 ? 'rem-low' : 'rem-ok'}">${rem}</div><div class="metric-lbl">剩餘課堂</div></div></div>${warn}
+  <table><thead><tr><th>#</th><th>日期</th><th>開始</th><th>結束</th><th>地點</th><th>消耗</th><th>剩餘</th></tr></thead>
+  <tbody>${rows.map((l, i) => `<tr><td>${l.type === '上課' ? (i + 1) : ''}</td><td>${l.date}</td><td>${l.timeStart || '—'}</td><td>${l.timeEnd || '—'}</td><td>${l.location || (l.type === '購課' ? '購課' + (l.peakType ? '・' + l.peakType : '') : '—')}</td><td class="${l.delta > 0 ? 'plus' : 'minus'}">${l.delta > 0 ? '+' : ''}${l.delta}</td><td>${l.balance}</td></tr>`).join('')}</tbody></table>
   <div class="footer">此紀錄由羽球教練助理產生</div></body></html>`;
   try {
-    const blob=new Blob([html],{type:'text/html;charset=utf-8'}), url=URL.createObjectURL(blob);
-    const a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener';
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' }), url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(()=>URL.revokeObjectURL(url),30000);
-  } catch(e) { const win=window.open('','_blank'); if(win){win.document.write(html);win.document.close();}else showToast('⚠️ 請允許彈出視窗'); }
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+  } catch(e) {
+    const win = window.open('', '_blank');
+    if (win) { win.document.write(html); win.document.close(); }
+    else showToast('⚠️ 請允許彈出視窗');
+  }
 }
 
-// ════ 操作函式 ════
+// ══════════════════════════════════════════
+//  操作函式
+// ══════════════════════════════════════════
 function saveAntKey() {
   const raw = document.getElementById('ant-key-input').value.trim();
   if (raw.includes('•')) { showToast('⚠️ Key 未變更'); return; }
   if (!raw.startsWith('sk-ant-')) { showToast('❌ 格式不對，應以 sk-ant- 開頭'); return; }
   setCfg(SK_ANT_KEY, raw); showToast('✅ API Key 已儲存'); render();
 }
+
 function saveNotionCfg() {
   const tok = document.getElementById('notion-tok-input').value.trim();
   const db  = document.getElementById('notion-db-input').value.trim();
@@ -842,61 +1231,120 @@ function saveNotionCfg() {
   if (db) setCfg(SK_NOTION_DB, db);
   showToast('✅ Notion 設定已儲存'); render();
 }
+
 function saveMemo(id) {
-  const s=state.students.find(x=>x.id===id);
-  s.memo=document.getElementById('memo-input-'+id).value.trim();
-  saveStudents(); render();
-}
-function deleteStudent(id) {
-  const s=state.students.find(x=>x.id===id);
-  if(!confirm('確定要刪除「'+s.name+'」的所有資料嗎？\n此動作無法復原。'))return;
-  state.students=state.students.filter(x=>x.id!==id);
-  saveStudents(); state.view='list'; state.selectedStudent=null; render();
-}
-function openStudent(id) { state.selectedStudent=id; state.view='detail'; render(); }
-function goBack() { state.view='list'; state.selectedStudent=null; render(); }
-function addLesson(id) {
-  const s=state.students.find(x=>x.id===id);
-  if(getRemaining(s)<=0){alert('課堂已用完，請先購課！');return;}
-  s.used++;
-  s.logs.unshift({date:today(),timeStart:nowTime(),timeEnd:'',location:'',type:'上課',delta:-1});
-  saveStudents(); render();
-}
-function addPurchase(id) {
-  const s=state.students.find(x=>x.id===id);
-  s.totalBought+=10;
-  s.logs.unshift({date:today(),timeStart:'',timeEnd:'',location:'',type:'購課',delta:10});
-  saveStudents(); render();
-}
-function addStudent() {
-  const name=prompt('學生姓名：'); if(!name)return;
-  const bought=parseInt(prompt('購買堂數：')||'10');
-  state.students.push({id:Date.now(),name,initials:name.slice(-1),totalBought:bought,used:0,memo:'',
-    logs:[{date:today(),timeStart:'',timeEnd:'',location:'',type:'購課',delta:bought}],notes:[]});
-  saveStudents(); render();
-}
-function doRecord() {
-  const id=parseInt(document.getElementById('rec-student').value);
-  const s=state.students.find(x=>x.id===id);
-  const count=parseInt(document.getElementById('rec-count').value)||1;
-  if(getRemaining(s)<count){alert('課堂不足！');return;}
-  s.used+=count;
-  s.logs.unshift({date:document.getElementById('rec-date').value,
-    timeStart:document.getElementById('rec-time-start').value||'',
-    timeEnd:document.getElementById('rec-time-end').value||'',
-    location:document.getElementById('rec-location').value.trim(),type:'上課',delta:-count});
-  saveStudents(); showToast('✅ 已記錄 '+s.name+' 上課 '+count+' 堂'); render();
-}
-function doPurchase() {
-  const id=parseInt(document.getElementById('buy-student').value);
-  const s=state.students.find(x=>x.id===id);
-  const count=parseInt(document.getElementById('buy-count').value)||10;
-  s.totalBought+=count;
-  s.logs.unshift({date:document.getElementById('buy-date').value||today(),
-    timeStart:'',timeEnd:'',location:document.getElementById('buy-location').value.trim(),type:'購課',delta:count});
-  saveStudents(); showToast('✅ 已為 '+s.name+' 新增 '+count+' 堂'); render();
+  const s = state.students.find(x => x.id === id);
+  s.memo      = document.getElementById('memo-input-' + id).value.trim();
+  s.updatedAt = today();
+  saveStudents(true);
+  showToast('✅ 備註已儲存');
+  render();
 }
 
+function deleteStudent(id) {
+  const s = state.students.find(x => x.id === id);
+  if (!confirm('確定要刪除「' + s.name + '」的所有資料嗎？\n此動作無法復原。')) return;
+  state.students = state.students.filter(x => x.id !== id);
+  saveStudents(true);
+  state.view = 'list'; state.selectedStudent = null; render();
+  showToast('🗑 已刪除 ' + s.name);
+}
+
+function openStudent(id) { state.selectedStudent = id; state.view = 'detail'; render(); }
+function goBack()        { state.view = 'list'; state.selectedStudent = null; render(); }
+
+// 從詳情頁快速記錄上課（-1）
+function addLesson(id) {
+  const s = state.students.find(x => x.id === id);
+  if (getRemaining(s) <= 0) { alert('課堂已用完，請先購課！'); return; }
+  s.used++;
+  s.updatedAt = today();
+  s.logs.unshift({ date: today(), timeStart: nowTimeRounded(), timeEnd: '', location: '', type: '上課', delta: -1 });
+  saveStudents(true);
+  showToast('✅ 已記錄 ' + s.name + ' 上課 1 堂');
+  render();
+  autoSyncNotion(id);
+}
+
+// 從詳情頁快速購課（+10）
+function addPurchase(id) {
+  const s = state.students.find(x => x.id === id);
+  s.totalBought += 10;
+  s.updatedAt = today();
+  s.logs.unshift({ date: today(), timeStart: '', timeEnd: '', location: '', type: '購課', delta: 10, peakType: '' });
+  saveStudents(true);
+  showToast('✅ 已為 ' + s.name + ' 新增 10 堂');
+  render();
+  autoSyncNotion(id);
+}
+
+function addStudent() {
+  const name   = prompt('學生姓名：'); if (!name) return;
+  const bought = parseInt(prompt('購買堂數：') || '10');
+  state.students.push({
+    id: Date.now(), name, initials: name.slice(-1), totalBought: bought, used: 0, memo: '', updatedAt: today(),
+    logs:  [{ date: today(), timeStart: '', timeEnd: '', location: '', type: '購課', delta: bought }],
+    notes: []
+  });
+  saveStudents(true);
+  showToast('✅ 已新增學生：' + name);
+  render();
+}
+
+// ★ 記錄上課（完整欄位版）
+function doRecord() {
+  const id    = parseInt(document.getElementById('rec-student').value);
+  const s     = state.students.find(x => x.id === id);
+  const count = parseInt(document.getElementById('rec-count').value) || 1;
+  if (getRemaining(s) < count) { alert('課堂不足！目前剩 ' + getRemaining(s) + ' 堂'); return; }
+
+  const date     = document.getElementById('rec-date').value || today();
+  const location = document.getElementById('rec-location').value.trim();
+  s.used     += count;
+  s.updatedAt = date;
+  s.logs.unshift({
+    date,
+    timeStart: document.getElementById('rec-time-start').value || '',
+    timeEnd:   document.getElementById('rec-time-end').value   || '',
+    location,
+    type:  '上課',
+    delta: -count
+  });
+  saveStudents(true);
+  showToast('✅ 已記錄 ' + s.name + ' 上課 ' + count + ' 堂');
+  render();
+  autoSyncNotion(id); // ★ 自動靜默同步
+}
+
+// ★ 新增購課（含尖峰/離峰）
+function doPurchase() {
+  const id       = parseInt(document.getElementById('buy-student').value);
+  const s        = state.students.find(x => x.id === id);
+  const count    = parseInt(document.getElementById('buy-count').value) || 10;
+  const peakType = document.getElementById('buy-peak').value;
+  const note     = document.getElementById('buy-note').value.trim();
+  const date     = document.getElementById('buy-date').value || today();
+
+  s.totalBought += count;
+  s.updatedAt    = date;
+  s.logs.unshift({
+    date,
+    timeStart: '', timeEnd: '',
+    location:  note,
+    type:      '購課',
+    delta:     count,
+    peakType
+  });
+
+  let msg = '✅ 已為 ' + s.name + ' 新增 ' + count + ' 堂';
+  if (peakType) msg += '（' + peakType + '）';
+  saveStudents(true);
+  showToast(msg);
+  render();
+  autoSyncNotion(id); // ★ 自動靜默同步
+}
+
+// ══ 啟動 ══
 render();
 </script>
 </body>
