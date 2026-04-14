@@ -1663,7 +1663,7 @@ render();
 // Helper: 安全取得 Notion 屬性值
 function nProp(page, key, type) {
   const p = page.properties?.[key];
-  if (\!p) return '';
+  if (!p) return '';
   if (type === 'title') return p.title?.[0]?.plain_text || '';
   if (type === 'rich_text') return p.rich_text?.[0]?.plain_text || '';
   if (type === 'number') return p.number ?? 0;
@@ -1675,7 +1675,7 @@ function nProp(page, key, type) {
 // Helper: 帶分頁的 Notion 查詢
 async function fetchAllNotionPages(dbId) {
   const token = getCfg(SK_NOTION_TOK);
-  if (\!token) throw new Error('未設定 Notion Token');
+  if (!token) throw new Error('未設定 Notion Token');
   
   let all = [];
   let cursor = undefined;
@@ -1702,7 +1702,7 @@ async function restoreFromNotion() {
   const token = getCfg(SK_NOTION_TOK);
   const dbId  = getCfg(SK_NOTION_DB);
   
-  if (\!token || \!dbId) {
+  if (!token || !dbId) {
     alert('❌ 請先設定 Notion Token 與學員資料庫 ID');
     return;
   }
@@ -1735,7 +1735,7 @@ async function restoreFromNotion() {
         purPages.forEach(p => {
           const stuUUID = nProp(p, '學員ID', 'rich_text');
           const stu = notionStudents.find(s => s.uuid === stuUUID);
-          if (\!stu) return;
+          if (!stu) return;
           
           stu.logs.push({
             logId:     nProp(p, '紀錄ID', 'rich_text') || generateUUID(),
@@ -1762,7 +1762,7 @@ async function restoreFromNotion() {
         clsPages.forEach(p => {
           const stuUUID = nProp(p, '學員ID', 'rich_text');
           const stu = notionStudents.find(s => s.uuid === stuUUID);
-          if (\!stu) return;
+          if (!stu) return;
           
           stu.logs.push({
             logId:     nProp(p, '紀錄ID', 'rich_text') || generateUUID(),
@@ -1794,7 +1794,7 @@ async function restoreFromNotion() {
     state.students.forEach(s => { if (s.uuid) existingMap[s.uuid] = s; });
     
     notionStudents.forEach(ns => {
-      if (\!ns.uuid) return;
+      if (!ns.uuid) return;
       const local = existingMap[ns.uuid];
       
       if (local) {
@@ -1807,7 +1807,7 @@ async function restoreFromNotion() {
         // 合併日誌：只加入本機沒有的 logId
         const localLogIds = new Set(local.logs.map(l => l.logId));
         ns.logs.forEach(nl => {
-          if (\!localLogIds.has(nl.logId)) {
+          if (!localLogIds.has(nl.logId)) {
             local.logs.push(nl);
             localLogIds.add(nl.logId);
           }
@@ -1860,3 +1860,4 @@ async function restoreFromNotion() {
 </script>
 </body>
 </html>
+         
