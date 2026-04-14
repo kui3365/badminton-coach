@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>羽球教練助理 v7</title>
+<title>羽球教練助理 v8</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="羽球助理">
@@ -90,6 +90,12 @@ textarea.input { min-height: 72px; resize: vertical; }
 .input-row-t { display: grid; grid-template-columns: 1fr 1fr 68px; gap: 8px; margin-bottom: 10px; align-items: end; position: relative; }
 .input-row-t .input-group { display: flex; flex-direction: column; min-width: 0; }
 .input-row-t .input-group .input { margin-bottom: 0; }
+/* 上課地點+堂數一列 */
+.input-row-loc { display: grid; grid-template-columns: 1fr 68px; gap: 8px; margin-bottom: 10px; align-items: end; }
+.input-row-loc .input-group { display: flex; flex-direction: column; min-width: 0; }
+.input-row-loc .input-group .input { margin-bottom: 0; }
+.input-row-loc .input-count { width: 100%; }
+
 
 /* 堂數窄欄 */
 .input-count { width: 100%; padding: 11px 6px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; color: #1c1c1e; font-size: 16px; font-family: inherit; -webkit-appearance: none; text-align: center; font-weight: 700; }
@@ -223,7 +229,7 @@ textarea.input { min-height: 72px; resize: vertical; }
   <div class="header">
     <div class="header-left">
       <div class="header-title">🏸 羽球教練助理</div>
-      <div class="header-sub" id="header-sub">v7 · 教練管理模式</div>
+      <div class="header-sub" id="header-sub">v8 · 正式版</div>
     </div>
     <div class="header-sync" id="header-sync" style="display:none">⏳ 同步中</div>
   </div>
@@ -333,6 +339,49 @@ const SK_NOTION_TOK     = 'bmc_notion_token';
 const SK_NOTION_DB      = 'bmc_notion_db_id';       // 學員基本資訊 DB
 const SK_NOTION_DB_PUR  = 'bmc_notion_db_purchase'; // 購課紀錄 DB
 const SK_NOTION_DB_CLS  = 'bmc_notion_db_class';    // 上課紀錄 DB
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ★ NOTION 資料庫欄位參考：v8 雲端還原功能
+   ═══════════════════════════════════════════════════════════════════════════════
+   
+   本系統支援三個 Notion 資料庫，用於自動同步學員資訊、購課紀錄、上課紀錄：
+   
+   1️⃣  【學員基本資訊 DB】(必填) - SK_NOTION_DB
+       - 學員ID (Rich Text): 學員的 UUID，用於關聯日誌
+       - 姓名 (Title): 學員姓名
+       - 購買堂數 (Number): 總共購買的課堂數
+       - 已上堂數 (Number): 已經上過的課堂數
+       - 剩餘堂數 (Number): 購買堂數 - 已上堂數
+       - 備註 (Rich Text): 學員備註
+       - 最後同步 (Rich Text): 最後同步時間戳
+   
+   2️⃣  【購課紀錄 DB】(選填) - SK_NOTION_DB_PUR
+       - 紀錄ID (Rich Text): 日誌記錄的 UUID
+       - 學員ID (Rich Text): 對應學員的 UUID
+       - 學員姓名 (Title): 購課學員的姓名
+       - 購課日期 (Date): 購課日期
+       - 購買堂數 (Number): 本次購課堂數
+       - 尖離峰 (Select): 「尖峰」或「離峰」
+       - 備註 (Rich Text): 購課備註（如付款方式）
+   
+   3️⃣  【上課紀錄 DB】(選填) - SK_NOTION_DB_CLS
+       - 紀錄ID (Rich Text): 日誌記錄的 UUID
+       - 學員ID (Rich Text): 對應學員的 UUID
+       - 學員姓名 (Title): 上課學員的姓名
+       - 上課日期 (Date): 上課日期
+       - 起始時間 (Rich Text): 課程開始時間 (HH:MM)
+       - 結束時間 (Rich Text): 課程結束時間 (HH:MM)
+       - 上課地點 (Rich Text): 上課場地
+       - 教練備註 (Rich Text): 教練備註
+       - 剩餘堂數 (Number): 上課後的剩餘堂數
+   
+   ☁️  v8 新功能：「從 Notion 下載並還原所有資料」
+       - 一鍵從雲端 Notion 還原所有學員、購課、上課紀錄
+       - 自動檢測新增/更新的學員，智慧合併到本機
+       - 適合換手機、換瀏覽器或要備份資料時使用
+   
+   ═══════════════════════════════════════════════════════════════════════════════
+*/
+
 
 function getCfg(key) { return localStorage.getItem(key) || ''; }
 function setCfg(key, val) { localStorage.setItem(key, val); }
@@ -827,12 +876,15 @@ function openGoogleCal(id) {
   const loc   = encodeURIComponent(item.location || '');
 
   // ★ 若行程已修改，在備註中加入警告訊息
-  let detailsText = item.note || '';
-  if (item.modified) {
-    detailsText = '⚠️ 此為修改行程，請手動確認並刪除舊行程 #ID:' + item.id
-      + (detailsText ? '\n\n備註：' + detailsText : '');
-  } else {
-    detailsText = (detailsText ? detailsText + '\n' : '') + '#ID:' + item.id;
+  // ★ 找到對應學生，構建包含 UUID 的備註
+  const student = state.students.find(s => s.id === item.studentId);
+  const stuUUID = student?.uuid || '';
+  
+  let detailsText = '⚠️ 若需修改或刪除，請手動確認並刪除 Google 日曆上的舊行程\n';
+  detailsText += '\n學員UUID: ' + (stuUUID || '未設定');
+  detailsText += '\n#排課ID: ' + item.id;
+  if (item.note) {
+    detailsText += '\n\n備註：' + item.note;
   }
   const det = encodeURIComponent(detailsText);
 
@@ -879,21 +931,25 @@ function renderRecord(c) {
           <label class="label">結束時間</label>
           <input class="input" type="time" id="rec-time-end" value="${eh}" style="margin-bottom:0">
         </div>
-        <div class="input-group">
-          <label class="label" style="text-align:center">堂數</label>
-          <input class="input-count" type="number" id="rec-count" value="1" min="1" max="9">
-        </div>
       </div>
 
       <label class="label">尖峰 / 離峰<span class="label-req">*必填</span></label>
       <select class="input" id="rec-peak">
         <option value="">── 請選擇 ──</option>
-        <option value="尖峰">🔴 尖峰（每堂扣 ${PEAK_DEDUCT} 堂・$${PEAK_UNIT_PRICE}）</option>
-        <option value="離峰">🟢 離峰（每堂扣 ${OFFPEAK_DEDUCT} 堂・$${OFFPEAK_UNIT_PRICE}）</option>
+        <option value="尖峰">🔴 尖峰</option>
+        <option value="離峰">🟢 離峰</option>
       </select>
 
-      <label class="label">上課地點</label>
-      <input class="input" type="text" id="rec-location" placeholder="例：體育館A場、社區球場、自家球場...">
+      <div class="input-row-loc">
+        <div class="input-group">
+          <label class="label">上課地點</label>
+          <input class="input" type="text" id="rec-location" placeholder="例：體育館A場、社區球場、自家球場..." style="margin-bottom:0">
+        </div>
+        <div class="input-group">
+          <label class="label" style="text-align:center">堂數</label>
+          <input class="input-count" type="number" id="rec-count" value="1" min="1" max="9">
+        </div>
+      </div>
 
       <button class="btn btn-primary" style="margin-top:2px" onclick="doRecord()">✅ 確認記錄上課</button>
     </div>
@@ -990,7 +1046,8 @@ function renderSettings(c) {
       <p style="font-size:12px;color:#8e8e93;margin-bottom:10px;line-height:1.6">
         上課/購課後系統自動同步。此按鈕可手動補同步全部學生。
       </p>
-      <button class="btn btn-sync" onclick="syncAllNotion()" id="sync-all-btn" ${!(nToken && nDbId) ? 'disabled' : ''}>🔄 同步所有學生到 Notion</button>
+<button class="btn btn-sync" id="restore-btn" style="background-color:#7C3AED;margin-bottom:8px" onclick="restoreFromNotion()">☁️ 從 Notion 下載並還原所有資料</button>
+            <button class="btn btn-sync" onclick="syncAllNotion()" id="sync-all-btn" ${!(nToken && nDbId) ? 'disabled' : ''}>🔄 同步所有學生到 Notion</button>
       <div id="sync-progress" style="display:none">
         <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
         <div id="progress-text" style="font-size:12px;color:#8e8e93;margin-top:6px;text-align:center"></div>
@@ -1053,7 +1110,7 @@ function exportExcel() {
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = `羽球教練備份_v7_${today()}.csv`;
+  a.download = `羽球教練備份_v8_${today()}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1598,6 +1655,208 @@ function doPurchase() {
 
 // ══ 啟動 ══
 render();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ☁️ NOTION 雲端還原功能 (v8 新增)
+// ══════════════════════════════════════════════════════════════════════════════
+
+// Helper: 安全取得 Notion 屬性值
+function nProp(page, key, type) {
+  const p = page.properties?.[key];
+  if (\!p) return '';
+  if (type === 'title') return p.title?.[0]?.plain_text || '';
+  if (type === 'rich_text') return p.rich_text?.[0]?.plain_text || '';
+  if (type === 'number') return p.number ?? 0;
+  if (type === 'date') return p.date?.start || '';
+  if (type === 'select') return p.select?.name || '';
+  return '';
+}
+
+// Helper: 帶分頁的 Notion 查詢
+async function fetchAllNotionPages(dbId) {
+  const token = getCfg(SK_NOTION_TOK);
+  if (\!token) throw new Error('未設定 Notion Token');
+  
+  let all = [];
+  let cursor = undefined;
+  
+  do {
+    const body = { page_size: 100 };
+    if (cursor) body.start_cursor = cursor;
+    
+    try {
+      const data = await notionRequest('/v1/databases/' + formatDbId(dbId) + '/query', 'POST', body);
+      all = all.concat(data.results || []);
+      cursor = data.has_more ? data.next_cursor : undefined;
+    } catch(e) {
+      console.error('Notion fetch error:', e);
+      throw e;
+    }
+  } while (cursor);
+  
+  return all;
+}
+
+// Main: 從 Notion 還原所有資料
+async function restoreFromNotion() {
+  const token = getCfg(SK_NOTION_TOK);
+  const dbId  = getCfg(SK_NOTION_DB);
+  
+  if (\!token || \!dbId) {
+    alert('❌ 請先設定 Notion Token 與學員資料庫 ID');
+    return;
+  }
+  
+  const btn = document.getElementById('restore-btn');
+  const origText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '⏳ 還原中...';
+  
+  try {
+    // Step 1: 取得所有學員
+    const stuPages = await fetchAllNotionPages(dbId);
+    
+    const notionStudents = stuPages.map(p => ({
+      uuid:        nProp(p, '學員ID', 'rich_text'),
+      name:        nProp(p, '姓名', 'title'),
+      totalBought: nProp(p, '購買堂數', 'number'),
+      used:        nProp(p, '已上堂數', 'number'),
+      memo:        nProp(p, '備註', 'rich_text'),
+      notionPageId: p.id,
+      logs: [],
+      notes: []
+    })).filter(s => s.name);
+    
+    // Step 2: 若有設定，取得購課紀錄
+    const purDbId = getCfg(SK_NOTION_DB_PUR);
+    if (purDbId) {
+      try {
+        const purPages = await fetchAllNotionPages(purDbId);
+        purPages.forEach(p => {
+          const stuUUID = nProp(p, '學員ID', 'rich_text');
+          const stu = notionStudents.find(s => s.uuid === stuUUID);
+          if (\!stu) return;
+          
+          stu.logs.push({
+            logId:     nProp(p, '紀錄ID', 'rich_text') || generateUUID(),
+            date:      nProp(p, '購課日期', 'date'),
+            timeStart: '',
+            timeEnd:   '',
+            location:  '',
+            note:      nProp(p, '備註', 'rich_text'),
+            type:      '購課',
+            delta:     nProp(p, '購買堂數', 'number'),
+            peakType:  nProp(p, '尖離峰', 'select'),
+          });
+        });
+      } catch(e) {
+        console.warn('購課紀錄取得失敗:', e);
+      }
+    }
+    
+    // Step 3: 若有設定，取得上課紀錄
+    const clsDbId = getCfg(SK_NOTION_DB_CLS);
+    if (clsDbId) {
+      try {
+        const clsPages = await fetchAllNotionPages(clsDbId);
+        clsPages.forEach(p => {
+          const stuUUID = nProp(p, '學員ID', 'rich_text');
+          const stu = notionStudents.find(s => s.uuid === stuUUID);
+          if (\!stu) return;
+          
+          stu.logs.push({
+            logId:     nProp(p, '紀錄ID', 'rich_text') || generateUUID(),
+            date:      nProp(p, '上課日期', 'date'),
+            timeStart: nProp(p, '起始時間', 'rich_text'),
+            timeEnd:   nProp(p, '結束時間', 'rich_text'),
+            location:  nProp(p, '上課地點', 'rich_text'),
+            note:      nProp(p, '教練備註', 'rich_text'),
+            type:      '上課',
+            delta:     -1,
+            peakType:  '',
+          });
+        });
+      } catch(e) {
+        console.warn('上課紀錄取得失敗:', e);
+      }
+    }
+    
+    // 排序日誌、計算 updatedAt
+    notionStudents.forEach(s => {
+      s.logs.sort((a, b) => b.date.localeCompare(a.date));
+      s.updatedAt = s.logs[0]?.date || today();
+      s.initials  = s.name.slice(-1);
+    });
+    
+    // Step 4: 與本機合併
+    let added = 0, updated = 0;
+    const existingMap = {};
+    state.students.forEach(s => { if (s.uuid) existingMap[s.uuid] = s; });
+    
+    notionStudents.forEach(ns => {
+      if (\!ns.uuid) return;
+      const local = existingMap[ns.uuid];
+      
+      if (local) {
+        // 更新現有學員
+        local.name = ns.name;
+        local.totalBought = ns.totalBought;
+        local.used = ns.used;
+        local.memo = ns.memo || local.memo;
+        
+        // 合併日誌：只加入本機沒有的 logId
+        const localLogIds = new Set(local.logs.map(l => l.logId));
+        ns.logs.forEach(nl => {
+          if (\!localLogIds.has(nl.logId)) {
+            local.logs.push(nl);
+            localLogIds.add(nl.logId);
+          }
+        });
+        
+        local.logs.sort((a, b) => b.date.localeCompare(a.date));
+        local.updatedAt = local.logs[0]?.date || local.updatedAt;
+        updated++;
+      } else {
+        // 新增學員
+        ns.id = Date.now() + Math.random();
+        state.students.push(ns);
+        existingMap[ns.uuid] = ns;
+        added++;
+      }
+    });
+    
+    // 儲存
+    saveStudents(true);
+    
+    // 更新 Notion mapping
+    const map = loadNotionMap(SK_NOTION_MAP);
+    notionStudents.forEach(ns => {
+      if (ns.uuid && ns.notionPageId) {
+        map[ns.uuid] = ns.notionPageId;
+      }
+    });
+    saveNotionMap(SK_NOTION_MAP, map);
+    
+    render();
+    showToast(`✅ 還原完成！新增 ${added} 位・更新 ${updated} 位學生`);
+    
+    const msg = `☁️ Notion 雲端還原完成！
+
+✅ 新增學生：${added} 位
+🔄 更新學生：${updated} 位
+
+所有資料已合併至本機，換手機/換瀏覽器也能找回資料。`;
+    alert(msg);
+    
+  } catch(e) {
+    console.error('還原失敗:', e);
+    alert('❌ 還原失敗：' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origText;
+  }
+}
+
 </script>
 </body>
 </html>
